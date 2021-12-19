@@ -1,0 +1,8 @@
+node_modules
+*Dockerfile
+docker-compose*
+Makefile
+.git
+.gitignore
+.dockerignore
+.env
