@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// adds bootstrap to project? couldn't get this to work
+// tried npm i -D css-loader style-loader
+// import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
