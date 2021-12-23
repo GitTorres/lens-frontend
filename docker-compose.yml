@@ -4,13 +4,17 @@ services:
   ts-react-app-dev:
     build:
       context: .
-      dockerfile: app.Dockerfile
+      dockerfile: react.Dockerfile
       target: base
     volumes:
       - ./src:/home/front/app/src
-    container_name: ts-react-app-dev
+    container_name: lens-front-dev
     expose:
       - '3000'
     ports:
       - '3000:3000'
     command: npm start
+networks:
+  default:
+    external: true
+    name: lens-mongo_default
