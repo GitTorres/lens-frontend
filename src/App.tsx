@@ -1,16 +1,27 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, useEffect, MouseEvent, EffectCallback } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import {ReactComponent as ReactLogo}  from './tri.svg';
 import axios, { AxiosResponse } from 'axios';
 import './App.css';
 import { GLMSummary } from './types';
 
 const App = () => {
-  // const [inputValue, setInputValue] = useState('');
+  const [modelRetrieved, setModelRetrieved]: [string, Dispatch<SetStateAction<string>>]  = useState('');
+  const [glmSummary, setGlmSummary] = useState<GLMSummary | undefined>(undefined)
 
-  const handleClick = async (event: MouseEvent<HTMLButtonElement>): Promise<void> => {
-    const res: AxiosResponse<GLMSummary> = await axios.get<GLMSummary>('http://localhost:8000/modelsummary/glm/model_0/')
-    console.log(res.data)
+  const handleClick = async (event: MouseEvent<HTMLButtonElement>): Promise<GLMSummary> => {
+    const res = await axios.get<GLMSummary>('http://localhost:8000/modelsummary/glm/model_0/')
+    return res.data
   };
+
+  useEffect(() => {
+    setGlmSummary(async () => {
+      
+    })
+  })
+
+  // Store GLM Summary on Click
+  // useEffect((handleClick) => { setGlmSummary(handleClick.data) })
 
   return (
     <div className="App">

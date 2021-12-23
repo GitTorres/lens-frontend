@@ -24,3 +24,25 @@ export interface FeatureSummary {
     data: FeatureSummaryData
 
 }
+
+// export const GLMSummaryInitialState: GLMSummary = {
+//     name = "",
+//     desc = "",
+//     target = "",
+//     prediction = "",
+//     var_weights = "",
+//     link_function = "",
+//     error_dist = "",
+//     explained_variance: 0,
+//     feature_summary: [{
+//         name: "",
+//         data: {
+//             bin_edge_right = [],
+//             sum_target = [],
+//             sum_prediction = [],
+//             sum_weight = [],
+//             wtd_avg_prediction = [],
+//             wtd_avg_target = []            
+//         }
+//     }]
+// }
