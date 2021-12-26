@@ -1,15 +1,14 @@
-import axios, { Method, AxiosResponse, AxiosInstance } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { GLMSummary, paramsGetSummary } from '../types';
 // axios.defaults.adapter = require('axios/lib/adapters/http'); // enable when testing in Quokka.js
 
-const api: AxiosInstance = axios.create({
-  // baseURL: process.env.REACT_APP_HOST_BACKEND,
-  baseURL: 'http://localhost:8000/',
-});
-
-export const request = <T>(method: Method, url: string, params: unknown): Promise<AxiosResponse<T, unknown>> => {
-  return api.request<T>({
-    method,
-    url,
-    params,
+// GET regression summary data
+export const getSummary = async (query: paramsGetSummary): Promise<GLMSummary[]> => {
+  const { data }: AxiosResponse<GLMSummary[]> = await axios.request({
+    method: 'get',
+    url: 'http://localhost:8000/modelsummary/regression/',
+    params: query
   });
+
+  return data;
 };
