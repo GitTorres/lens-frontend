@@ -18,6 +18,7 @@ interface QueryParams {
   max_explained_variance: number;
   features: string[];
 }
+type ValueOf<T> = T[keyof T];
 type Optional<T> = { [K in keyof T]?: T[K] };
 const initialQueryParams = {
   name: '',
@@ -26,12 +27,25 @@ const initialQueryParams = {
   max_explained_variance: 1,
   features: []
 };
+type HTMLInputHandler = (x: ChangeEvent<HTMLInputElement>) => void;
 // const mapObject = <K extends string, T, U>(obj: Record<K, T>, f: (x: T) => U): Record<K, U>
 
 export const Form = () => {
   //////// STATE //////////
   //// boolean value to trigger an API call upon value change
   const [clickToggle, setClickToggle] = useState(false);
+
+  //// filter query for the collection.find() request
+  const [query, setQuery] = useState<QueryParams>(initialQueryParams);
+
+  // update query on input change
+  const onInputChange: HTMLInputHandler = (evt) => {
+    const updatedQuery = {
+      ...query,
+      [evt.target.name]: evt.target.value
+    };
+    setQuery(updatedQuery);
+  };
 
   useEffect(() => {
     getSummary(query).then((data) => {
@@ -40,49 +54,25 @@ export const Form = () => {
     });
   }, [clickToggle]);
 
-  //// filter query for the collection.find() request
-  const [query, setQuery] = useState<QueryParams>(initialQueryParams);
-
   //// the formulas for queried model summaries
   const [modelFormulas, setModelFormulas] = useState<string[]>([]);
 
   //////// CALLABLES AND HANDLERS //////////
   // update clickToggle on button click
   const onButtonClick = (): void => setClickToggle(!clickToggle);
-
-  // update query on input change
-  const onInputChange = (evt: ChangeEvent<HTMLInputElement>): void => {
-    const updatedInputValue = evt.target.value;
-    const updatedQuery = {
-      ...query,
-      [evt.target.name]: updatedInputValue
-    };
-    setQuery(updatedQuery);
-  };
-
-  // generate <input> fields
-  const listLabels = (): JSX.Element[] => {
-    const inputElements: JSX.Element[] = [];
-
-    // bizarre bullshit
-    for (const [k, v] of Object.entries(query)) {
-      const newElement = (
-        <p key={k}>
-          <label key={k}>
-            {k}
-            <input type="text" key={k} name={k} value={v} onChange={onInputChange} />
-          </label>
-        </p>
-      );
-      inputElements.push(newElement);
-    }
-    return inputElements;
-  };
-
   return (
     <div>
       <MyButton onClick={() => onButtonClick()}>{'query data'}</MyButton>
-      <form>{listLabels()}</form>
+      <form>
+        {Object.keys(query).map((k) => (
+          <FormTextbox
+            key={k}
+            textBoxName={k as keyof QueryParams}
+            textBoxValue={query[k as keyof QueryParams]}
+            onTextBoxChange={onInputChange}
+          />
+        ))}
+      </form>
       {modelFormulas.map((f) => (
         <p key={f}>{f}</p>
       ))}
@@ -103,3 +93,24 @@ const MyButton = ({ onClick, children }: MyButtonProps) => (
     {children}
   </motion.button>
 );
+
+interface TextBoxProps {
+  textBoxName: keyof QueryParams;
+  textBoxValue: QueryParams[keyof QueryParams];
+  onTextBoxChange: HTMLInputHandler;
+}
+const FormTextbox = ({ textBoxName, textBoxValue, onTextBoxChange }: TextBoxProps) => {
+  return (
+    <p>
+      <label>
+        {textBoxName}
+        <input
+          type="text"
+          name={textBoxName}
+          value={textBoxValue}
+          onChange={onTextBoxChange}
+        />
+      </label>
+    </p>
+  );
+};
