@@ -8,9 +8,11 @@ import React, {
   ChangeEvent
 } from 'react';
 import { getSummary } from '../../api/request';
-import { motion } from 'framer-motion';
-import '../../App.css';
+// import { motion } from 'framer-motion';
+import { Button } from '@mui/material';
+import Delete from '@material-ui/icons/Delete';
 
+///////////////////////////////// Types and Interfaces
 interface QueryParams {
   name: string;
   desc: string;
@@ -29,6 +31,10 @@ const initialQueryParams = {
 };
 type HTMLInputHandler = (x: ChangeEvent<HTMLInputElement>) => void;
 // const mapObject = <K extends string, T, U>(obj: Record<K, T>, f: (x: T) => U): Record<K, U>
+
+//////////////////////////////// Custom Styles
+
+///////////////////////////////////// Components
 
 export const Form = () => {
   //////// STATE //////////
@@ -85,13 +91,15 @@ interface MyButtonProps {
   children: string;
 }
 const MyButton = ({ onClick, children }: MyButtonProps) => (
-  <motion.button
+  <Button
+    variant="contained"
+    color="secondary"
+    size="medium"
+    startIcon={<Delete />}
     onClick={onClick}
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
   >
     {children}
-  </motion.button>
+  </Button>
 );
 
 interface TextBoxProps {

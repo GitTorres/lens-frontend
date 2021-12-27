@@ -5,37 +5,20 @@
 // import { Tutorial2ButtonExampleComponent } from './components/learning/tutorial2';
 // import { PolygonAttributes } from './types';
 
-import React, { useState } from 'react';
-import './App.css';
-import { Sidebar } from './components/learning/sidebar';
-import { Form } from './components/learning/myFirstComponent';
-import Home from './components/learning/home';
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from './themes/custom';
+import Home from './components/Home';
 
 function App() {
-  const [selectedMode, setSelectedMode] = useState('open'); // we use inference here when we can
-
   return (
-    <div className="app">
-      <Form></Form>
-      {/* <Sidebar setSelectedMode={setSelectedMode} /> */}
-      {/* <Home selectedMode={selectedMode} /> */}
+    <div>
+      <ThemeProvider theme={theme}>
+        {/* <Form></Form> */}
+        <Home />
+      </ThemeProvider>
     </div>
   );
 }
 
 export default App;
-
-// Form Component
-// props
-//    none
-// state
-//    switch (true/false from button press).  Track.
-//    query parameters.   Do not Track.
-// effect
-//    model formulas.  handle bad requests.
-// ui
-//  one input box per query parameter
-
-// Objectives
-// Stretch 2 -> add to UI a table with formulas, where we create each row via a .map() expression
-// Stretch 3 -> refactor state to use a single object for the component state
