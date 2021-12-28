@@ -37,8 +37,8 @@ const ImportButton = styled('div')(({ theme }) => ({
   width: '100%',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(1),
-    width: 'auto'
-  }
+    width: 'auto',
+  },
 }));
 
 const PrimarySearchAppBar = (): JSX.Element => {
@@ -65,13 +65,13 @@ const PrimarySearchAppBar = (): JSX.Element => {
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right'
+        horizontal: 'right',
       }}
       id={menuId}
       keepMounted
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right'
+        horizontal: 'right',
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
@@ -85,21 +85,10 @@ const PrimarySearchAppBar = (): JSX.Element => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
+          <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
             Lens v.1
           </Typography>
           <ImportButton>

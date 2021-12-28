@@ -5,11 +5,18 @@ import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {
+    background: {
+      paper: red[400],
+    },
     primary: {
-      main: red[500]
-    }
+      main: red[400],
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: '#000000',
+    },
     // mode: 'dark'
-  }
+  },
 });
 
 declare module '@mui/material/styles' {
