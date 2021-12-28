@@ -14,7 +14,6 @@ function App() {
   return (
     <div>
       <ThemeProvider theme={theme}>
-        {/* <Form></Form> */}
         <Home />
       </ThemeProvider>
     </div>

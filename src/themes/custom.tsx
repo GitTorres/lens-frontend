@@ -6,10 +6,10 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     background: {
-      paper: red[400],
+      paper: red[300],
     },
     primary: {
-      main: red[400],
+      main: red[300],
     },
     text: {
       primary: '#ffffff',
