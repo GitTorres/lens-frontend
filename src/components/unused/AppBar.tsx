@@ -21,15 +21,6 @@ import Button from '@mui/material/Button';
 // 3. Dynamic menu is written in the TS section of the JSX component
 // 4. Custom styling is defined outside of the JSX component, and object returned is a StyledComponent that can be called wthin the JSX component
 
-{
-  /* <Search>
-<SearchIconWrapper>
-  <SearchIcon />
-</SearchIconWrapper>
-<StyledInputBase placeholder="" inputProps={{ 'aria-label': 'search' }} />
-</Search> */
-}
-
 const ImportButton = styled('div')(({ theme }) => ({
   position: 'relative',
   marginRight: theme.spacing(2),
@@ -37,8 +28,8 @@ const ImportButton = styled('div')(({ theme }) => ({
   width: '100%',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
+    width: 'auto'
+  }
 }));
 
 const PrimarySearchAppBar = (): JSX.Element => {
@@ -65,13 +56,13 @@ const PrimarySearchAppBar = (): JSX.Element => {
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'right'
       }}
       id={menuId}
       keepMounted
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'right'
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
@@ -85,10 +76,21 @@ const PrimarySearchAppBar = (): JSX.Element => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            sx={{ mr: 2 }}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
             Lens v.1
           </Typography>
           <ImportButton>

@@ -10,14 +10,24 @@ import { Divider } from '@mui/material';
 import CardPlot from './CardPlot';
 
 const bull = (
-  <Box component="span" sx={{ display: 'inline-block', mx: '3px', transform: 'scale(1.5)' }}>
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '3px', transform: 'scale(1.5)' }}
+  >
     •
   </Box>
 );
 
-const BasicCard = ({ title, width, height }: { title: string; width: number; height: number }) => {
-  const { innerWidth } = window;
-  console.log(innerWidth);
+const BasicCard = ({
+  title,
+  width,
+  height
+}: {
+  title: string;
+  width: number;
+  height: number;
+}) => {
+  // const { innerWidth } = window; // use later when we want to dynamically resize the plot with re-renders
 
   return (
     <Card sx={{ margin: '10px', width: width, height: height }}>

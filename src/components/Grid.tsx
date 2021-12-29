@@ -14,8 +14,20 @@ import BasicCard from './Card';
 
 const AutoGrid = () => {
   return (
-    <Box sx={{ flexGrow: 1, p: 3, marginRight: '10px', marginLeft: '10px', marginTop: '60px' }}>
-      <Grid container spacing={{ xs: 2, md: 2 }} columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        p: 3,
+        marginRight: '10px',
+        marginLeft: '10px',
+        marginTop: '60px'
+      }}
+    >
+      <Grid
+        container
+        spacing={{ xs: 2, md: 2 }}
+        columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
+      >
         <BasicCard title="Model 1" width={725} height={575} />
       </Grid>
     </Box>
