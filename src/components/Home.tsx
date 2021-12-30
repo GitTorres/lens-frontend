@@ -10,14 +10,12 @@ export interface HomeComponentStateData {
 export type StateHandler<T> = Record<keyof T, (arg0: T[keyof T]) => void>;
 
 const Home = () => {
-  console.log('home rendered');
-
   //state
   const initialHomeState: HomeComponentStateData = {
     clickedItemName: ''
   };
   const [homeState, setHomeState] = useState<HomeComponentStateData>(initialHomeState);
-  const HomeComponentStateHandler: StateHandler<HomeComponentStateData> = {
+  const homeComponentStateHandler: StateHandler<HomeComponentStateData> = {
     clickedItemName: (clickedItemName) =>
       setHomeState({
         ...homeState,
@@ -25,11 +23,13 @@ const Home = () => {
       })
   };
 
+  // functions unrelated to state
+
   // dom
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
-        <DrawerAndAppBar {...HomeComponentStateHandler} />
+        <DrawerAndAppBar {...homeComponentStateHandler} />
         <AutoGrid />
       </Box>
     </div>
