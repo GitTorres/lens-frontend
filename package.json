@@ -56,10 +56,12 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/react-plotly.js": "^2.5.0",
-    "@typescript-eslint/eslint-plugin": "^5.8.0",
-    "@typescript-eslint/parser": "^5.8.0",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.5.1",
     "prettier-eslint": "^13.0.0",
     "tslib": "^2.3.1"

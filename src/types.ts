@@ -37,3 +37,5 @@ export interface ShortSummaryCard {
   target: string;
   explained_variance: number;
 }
+
+export type UpdateStateFunction<T> = <K extends keyof T>(key: K, val: T[K]) => void;

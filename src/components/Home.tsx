@@ -1,36 +1,44 @@
-import React, { useState } from 'react';
-import DrawerAndAppBar from './DrawerAndAppBar';
-import AutoGrid from './Grid';
-// import Nav from './unused/Nav';
+import React, { useState, useCallback } from 'react';
+import DrawerAndAppBar from '../components/DrawerAndAppBar';
+import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
+import { GLMSummary } from '../types';
+import { UpdateStateFunction } from '../types';
+import { Button } from '@mui/material';
+import { isIdentical, isObject } from '../utils/utils';
 
 export interface HomeComponentStateData {
-  clickedItemName: string | undefined;
+  clickedItemName: string;
+  modelSummaryData: GLMSummary[];
 }
-export type StateHandler<T> = Record<keyof T, (arg0: T[keyof T]) => void>;
 
 const Home = () => {
   //state
   const initialHomeState: HomeComponentStateData = {
-    clickedItemName: ''
+    clickedItemName: '',
+    modelSummaryData: []
   };
   const [homeState, setHomeState] = useState<HomeComponentStateData>(initialHomeState);
-  const homeComponentStateHandler: StateHandler<HomeComponentStateData> = {
-    clickedItemName: (clickedItemName) =>
-      setHomeState({
-        ...homeState,
-        ['clickedItemName']: clickedItemName
-      })
+
+  // state handler to pass down
+  const updateHomeState: UpdateStateFunction<HomeComponentStateData> = (
+    key,
+    newVal
+  ) => {
+    // add check to see if data changed before overwriting state --> do later
+    setHomeState({ ...homeState, [key]: newVal });
   };
 
-  // functions unrelated to state
+  // callbacks
 
+  // functions unrelated to state
+  console.log('re-render home');
   // dom
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
-        <DrawerAndAppBar {...homeComponentStateHandler} />
-        <AutoGrid />
+        <DrawerAndAppBar {...{ updateHomeState }} />
+        {/* <AutoGrid /> */}
       </Box>
     </div>
   );

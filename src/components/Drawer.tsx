@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -7,17 +7,18 @@ import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import { DrawerProps } from '@mui/material';
+import { DrawerProps, useThemeProps } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { HomeComponentStateData, StateHandler } from './Home';
+import { HomeComponentStateData } from './Home';
 import { getSummary } from '../api/request';
 import { GLMSummary, paramsGetSummary } from '../types';
-import { equals } from '../utils/utils';
+import { UpdateStateFunction } from '../types';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -58,46 +59,30 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
+  display: 'flex', // we can use flow, grid, or flex layouts
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'right',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar
 }));
 
-interface AppDrawerProps
-  extends Partial<DrawerProps>,
-    StateHandler<HomeComponentStateData> {
-  handleDrawerClose: () => void;
-}
-export interface AppDrawerComponentStateData {
-  modelNames: string[];
+interface AppDrawerProps extends Partial<DrawerProps> {
+  updateHomeState: UpdateStateFunction<HomeComponentStateData>;
+  handleDrawerClose?: () => void;
 }
 
 const AppDrawer = (props: AppDrawerProps) => {
   // props destructuring
-  const { clickedItemName, variant, open, handleDrawerClose } = props;
+  const { updateHomeState, variant, open, handleDrawerClose } = props;
+
+  // applying theming
   const theme = useTheme();
 
-  // component state (used for re-renders)
-  const initialAppDrawerState: AppDrawerComponentStateData = {
-    modelNames: []
-  };
-
-  const [appDrawerState, setAppDrawerState] =
-    useState<AppDrawerComponentStateData>(initialAppDrawerState);
-
-  const appDrawerComponentStateHandler: StateHandler<AppDrawerComponentStateData> = {
-    modelNames: (modelNames) =>
-      setAppDrawerState({
-        ...appDrawerState,
-        ['modelNames']: modelNames
-      })
-  };
-
   // component callbacks
-  const onClickImportModels = () => {
+  const onClickImportModels = () => console.log('clickerooni');
+
+  useEffect(() => {
     const query: paramsGetSummary = {
       name: undefined,
       desc: undefined,
@@ -105,58 +90,52 @@ const AppDrawer = (props: AppDrawerProps) => {
       max_explained_variance: undefined,
       features: undefined
     };
-
-    getSummary(query).then((data) => {
-      const names = data.map((item) => item.name);
-
-      if (!equals(appDrawerState.modelNames, names)) {
-        appDrawerComponentStateHandler.modelNames(names);
-      }
-    });
-  };
+    const fetchData = async () => {
+      const data: GLMSummary[] = await getSummary(query);
+      updateHomeState('modelSummaryData', data);
+    };
+    fetchData();
+  }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>, text: string): void => {
     event.preventDefault();
 
-    // report the name of the clicked drawer item to the parent component that can render the Plotting Grid
-    clickedItemName(text);
+    // report the name of the clicked drawer item to the parent component that
+    // can render the Plotting Grid
+    // clickedItemName(text);
   };
+
+  console.log('re-render drawer');
 
   return (
     <Drawer variant={variant} open={open}>
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'rtl' ? (
-            <ChevronRightIcon sx={{ color: 'text.primary' }} />
-          ) : (
-            <ChevronLeftIcon sx={{ color: 'text.primary' }} />
-          )}
+          <ChevronLeftIcon sx={{ color: 'text.secondary' }} />
         </IconButton>
       </DrawerHeader>
       <Divider />
-      <List>
-        <ListItem button onClick={() => onClickImportModels()}>
+      <List dense={true}>
+        <ListItemButton onClick={() => onClickImportModels()}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
           <ListItemText primary="Import Models" />
-        </ListItem>
-        <ListItem button>
+        </ListItemButton>
+        <ListItemButton>
           <ListItemIcon>
             <SummarizeIcon />
           </ListItemIcon>
           <ListItemText primary="Compare" />
-        </ListItem>
-      </List>
-      <Divider />
-      <List>
-        {appDrawerState.modelNames?.map((text, index) => (
-          <ListItem button key={text} onClick={(event) => handleClick(event, text)}>
+        </ListItemButton>
+        <Divider />
+        {['billy', 'joe', 'ray'].map((text, index) => (
+          <ListItemButton key={text} onClick={(event) => handleClick(event, text)}>
             <ListItemIcon>
               <ShowChartIcon />
             </ListItemIcon>
             <ListItemText primary={text} />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
     </Drawer>

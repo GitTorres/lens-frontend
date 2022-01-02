@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -7,7 +7,9 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AppDrawer from './Drawer';
-import { HomeComponentStateData, StateHandler } from './Home';
+import { UpdateStateFunction } from '../types';
+import { HomeComponentStateData } from './Home';
+// import { HomeComponentStateData, StateHandler } from './Home';
 
 export const drawerWidth = 240;
 
@@ -33,7 +35,10 @@ const AppBar = styled(MuiAppBar, {
   })
 }));
 
-const DrawerAndAppBar = (props: StateHandler<HomeComponentStateData>) => {
+interface Props {
+  updateHomeState: UpdateStateFunction<HomeComponentStateData>;
+}
+const DrawerAndAppBar = ({ updateHomeState }: Props) => {
   // const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -41,14 +46,14 @@ const DrawerAndAppBar = (props: StateHandler<HomeComponentStateData>) => {
     setOpen(true);
   };
 
-  const handleDrawerClose = () => {
+  const handleDrawerClose = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
   return (
     <React.Fragment>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" elevation={4} open={open}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -68,7 +73,7 @@ const DrawerAndAppBar = (props: StateHandler<HomeComponentStateData>) => {
         </Toolbar>
       </AppBar>
       <AppDrawer
-        {...props}
+        {...{ updateHomeState }}
         variant="permanent"
         open={open}
         handleDrawerClose={handleDrawerClose}
