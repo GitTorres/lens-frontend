@@ -6,47 +6,20 @@ import { GLMSummary } from '../types';
 import { UpdateStateFunction } from '../types';
 import { Button, ButtonGroup } from '@mui/material';
 import { isIdentical, isObject } from '../utils/utils';
+import { fetchSummaryData, summaryDataDefault } from './HomeData';
 
-// types & interfaces
-export type State =
-  | { status: 'none' } // occurs only on initial mount
-  | { status: 'fetching' }
-  | { status: 'success'; data: GLMSummary[] }
-  | { status: 'failure'; error: string };
-
-export type Action =
-  | { type: 'FETCH_INIT' }
-  | { type: 'FETCH_SUCCESS'; data: GLMSummary[] }
-  | { type: 'FETCH_ERROR'; error: string };
-
-// reducers
-const apiFetch = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'FETCH_INIT':
-      return { status: 'fetching' };
-    case 'FETCH_SUCCESS':
-      return { status: 'success', data: action.data };
-    case 'FETCH_ERROR':
-      return { status: 'failure', error: action.error };
-  }
-};
-
-// context
-interface HomeContextInterface {
-  dispatch: React.Dispatch<Action>;
-}
-export const HomeContext = React.createContext<HomeContextInterface>({
-  dispatch: () => {
-    null;
-  }
-});
+// view hooks
 
 const Home = () => {
   // state
   const [count, setCount] = useState(0);
 
   // async data fetch reducer
-  const [apiState, apiDispatch] = useReducer(apiFetch, { status: 'none' });
+  const [summaryData, summaryDataDispatch] = useReducer(
+    fetchSummaryData,
+    summaryDataDefault
+  );
+
   const apiContext = useMemo(() => {
     return { dispatch: apiDispatch };
   }, [apiDispatch]);

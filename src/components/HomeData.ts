@@ -1,6 +1,7 @@
 import { QuerySummary } from '../types';
 import { GLMSummary } from '../types';
 import axios, { AxiosResponse } from 'axios';
+import { useReducer } from 'react';
 
 // view calculations
 export const homeFetchSummaries = async (
@@ -39,7 +40,7 @@ export const summaryDataDefault: FetchState<GLMSummary[]> = {
 };
 
 // view reducers
-const changeSummaryDataState = (
+export const fetchSummaryData = (
   state: HomeState['summaryData'],
   action: FetchAction<GLMSummary[]>
 ): HomeState['data'] => {
@@ -52,5 +53,3 @@ const changeSummaryDataState = (
       return { ...state, status: 'failure', error: action.error };
   }
 };
-
-// view hooks
