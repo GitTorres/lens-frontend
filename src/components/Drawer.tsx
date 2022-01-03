@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -13,12 +13,13 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import { DrawerProps, useThemeProps } from '@mui/material';
+import { DrawerProps, Skeleton, useThemeProps } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { HomeComponentStateData } from './Home';
 import { getSummary } from '../api/request';
 import { GLMSummary, paramsGetSummary } from '../types';
 import { UpdateStateFunction } from '../types';
+import { Action, HomeContext } from './Home';
+import { LoadingButton } from '@mui/lab';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -68,20 +69,31 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 interface AppDrawerProps extends Partial<DrawerProps> {
-  updateHomeState: UpdateStateFunction<HomeComponentStateData>;
+  // dispatch?: React.Dispatch<Action>;
   handleDrawerClose?: () => void;
 }
 
-const AppDrawer = (props: AppDrawerProps) => {
+const AppDrawer = React.memo((props: AppDrawerProps) => {
+  // state
+  const [isLoadingData, setIsLoadingData] = useState(false);
+
   // props destructuring
-  const { updateHomeState, variant, open, handleDrawerClose } = props;
+  const { variant, open, handleDrawerClose } = props;
+  const { dispatch } = useContext(HomeContext);
 
   // applying theming
   const theme = useTheme();
 
   // component callbacks
-  const onClickImportModels = () => console.log('clickerooni');
+  const handleClickLoadModels = () => setIsLoadingData(true);
+  const handleClickShowModel = (
+    event: React.MouseEvent<HTMLDivElement>,
+    text: string
+  ): void => {
+    event.preventDefault();
+  };
 
+  // side effects
   useEffect(() => {
     const query: paramsGetSummary = {
       name: undefined,
@@ -92,18 +104,13 @@ const AppDrawer = (props: AppDrawerProps) => {
     };
     const fetchData = async () => {
       const data: GLMSummary[] = await getSummary(query);
-      updateHomeState('modelSummaryData', data);
     };
     fetchData();
   }, []);
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>, text: string): void => {
-    event.preventDefault();
-
-    // report the name of the clicked drawer item to the parent component that
-    // can render the Plotting Grid
-    // clickedItemName(text);
-  };
+  // report the name of the clicked drawer item to the parent component that
+  // can render the Plotting Grid
+  // clickedItemName(text);
 
   console.log('re-render drawer');
 
@@ -116,7 +123,7 @@ const AppDrawer = (props: AppDrawerProps) => {
       </DrawerHeader>
       <Divider />
       <List dense={true}>
-        <ListItemButton onClick={() => onClickImportModels()}>
+        <ListItemButton onClick={() => handleClickLoadModels()}>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
@@ -130,7 +137,10 @@ const AppDrawer = (props: AppDrawerProps) => {
         </ListItemButton>
         <Divider />
         {['billy', 'joe', 'ray'].map((text, index) => (
-          <ListItemButton key={text} onClick={(event) => handleClick(event, text)}>
+          <ListItemButton
+            key={text}
+            onClick={(event) => handleClickShowModel(event, text)}
+          >
             <ListItemIcon>
               <ShowChartIcon />
             </ListItemIcon>
@@ -140,6 +150,17 @@ const AppDrawer = (props: AppDrawerProps) => {
       </List>
     </Drawer>
   );
-};
+});
 
 export default AppDrawer;
+
+const Skel = () => {
+  return (
+    <ListItem>
+      <ListItemIcon>
+        <ShowChartIcon />
+      </ListItemIcon>
+      <Skeleton width={'100%'} animation="wave" />
+    </ListItem>
+  );
+};

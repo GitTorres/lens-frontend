@@ -24,7 +24,7 @@ export interface FeatureSummary {
   data: FeatureSummaryData;
 }
 
-export interface paramsGetSummary {
+export interface QuerySummary {
   name: string | undefined;
   desc: string | undefined;
   min_explained_variance: number | undefined;
