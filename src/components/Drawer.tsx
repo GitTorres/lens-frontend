@@ -78,7 +78,11 @@ const AppDrawer = React.memo((props: AppDrawerProps) => {
   const theme = useTheme();
 
   // component callbacks
-  const handleClickLoadModels = () => console.log('clickerooni');
+  const handleClickLoadModels = () =>
+    dispatch({
+      type: 'FETCH_INIT',
+      data: []
+    });
   const handleClickShowModel = (
     event: React.MouseEvent<HTMLDivElement>,
     text: string

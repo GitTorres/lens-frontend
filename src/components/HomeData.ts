@@ -18,22 +18,25 @@ export interface apiFetchResult<T> {
   status: 'NONE' | 'FETCH' | 'SUCCESS' | 'FAIL';
   data: T | undefined;
   error: string;
+  timeOfRequest: number;
 }
 
 export type apiFetchAction<T> =
-  | { type: 'FETCH_INIT'; data: T | undefined }
+  | { type: 'FETCH_INIT'; data: T | undefined; timeOfRequest: number }
   | { type: 'FETCH_SUCCESS'; data: T | undefined }
   | { type: 'FETCH_ERROR'; data: T | undefined; error: string };
 
 const summaryDataOnMount: apiFetchResult<GLMSummary[]> = {
   status: 'NONE',
   data: [],
-  error: ''
+  error: '',
+  timeOfRequest: 0
 };
 
 export const fetchActionTemplate: apiFetchAction<GLMSummary[]> = {
   type: 'FETCH_INIT',
-  data: []
+  data: [],
+  timeOfRequest: 0
 };
 
 // fetching model summary data
@@ -43,11 +46,17 @@ export const reducerSummaryData = (
 ): HomeState['summaryData'] => {
   switch (action.type) {
     case 'FETCH_INIT':
-      return { ...state, status: 'FETCH', error: '' };
+      return {
+        ...state,
+        timeOfRequest: action.timeOfRequest,
+        status: 'FETCH',
+        data: action.data,
+        error: ''
+      };
     case 'FETCH_SUCCESS':
       return { ...state, status: 'SUCCESS', data: action.data, error: '' };
     case 'FETCH_ERROR':
-      return { ...state, status: 'FAIL', error: action.error };
+      return { ...state, status: 'FAIL', data: action.data, error: action.error };
   }
 };
 

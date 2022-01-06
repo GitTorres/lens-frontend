@@ -28,9 +28,15 @@ const Home = () => {
     homeStateOnMount.summaryData
   );
 
-  const memo = useMemo(() => {
-    return { summaryDataDispatch: summaryDataDispatch };
-  }, [summaryDataDispatch]);
+  // handle API requests with side effects
+  // useEffect(() => {
+  //   const currentRenderTime = new Date().getTime();
+  // }, []);
+
+  //  no need to memoize because the dispatch doesn't change
+  // const memo = useMemo(() => {
+  //   return { summaryDataDispatch: summaryDataDispatch };
+  // }, [summaryDataDispatch]);
 
   // callbacks
   const handleClicks = (
@@ -50,7 +56,7 @@ const Home = () => {
 
   // JSX
   return (
-    <AppState.Provider value={memo.summaryDataDispatch}>
+    <AppState.Provider value={summaryDataDispatch}>
       <div>
         <Box sx={{ display: 'flex' }}>
           <DrawerAndAppBar />
@@ -67,14 +73,18 @@ const Home = () => {
           >
             <Button
               onClick={() =>
-                memo.summaryDataDispatch({ type: 'FETCH_INIT', data: summaryData.data })
+                summaryDataDispatch({
+                  type: 'FETCH_INIT',
+                  timeOfRequest: 0,
+                  data: summaryData.data
+                })
               }
             >
               Init
             </Button>
             <Button
               onClick={() =>
-                memo.summaryDataDispatch({
+                summaryDataDispatch({
                   type: 'FETCH_SUCCESS',
                   data: summaryData.data
                 })
@@ -84,7 +94,7 @@ const Home = () => {
             </Button>
             <Button
               onClick={() =>
-                memo.summaryDataDispatch({
+                summaryDataDispatch({
                   type: 'FETCH_ERROR',
                   data: summaryData.data,
                   error: 'failure to fetch data'
