@@ -1,38 +1,56 @@
-import React, { useState, useCallback, useReducer, useMemo } from 'react';
+import React, { useState, useReducer, useMemo } from 'react';
 import DrawerAndAppBar from '../components/DrawerAndAppBar';
 import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
 import { GLMSummary } from '../types';
-import { UpdateStateFunction } from '../types';
 import { Button, ButtonGroup } from '@mui/material';
-import { isIdentical, isObject } from '../utils/utils';
-import { fetchSummaryData, summaryDataDefault } from './HomeData';
+import {
+  reducerSummaryData,
+  homeStateOnMount,
+  btnSources,
+  fetchActionTemplate
+} from './HomeData';
 
-// view hooks
+// contexts
+export const AppState = React.createContext<React.Dispatch<typeof fetchActionTemplate>>(
+  () => fetchActionTemplate
+);
 
 const Home = () => {
-  // state
-  const [count, setCount] = useState(0);
+  // button click tracker
+  const [clickedBtnSource, setClickedBtnSource] = useState(
+    homeStateOnMount.clickedBtnSource
+  );
 
   // async data fetch reducer
   const [summaryData, summaryDataDispatch] = useReducer(
-    fetchSummaryData,
-    summaryDataDefault
+    reducerSummaryData,
+    homeStateOnMount.summaryData
   );
 
-  const apiContext = useMemo(() => {
-    return { dispatch: apiDispatch };
-  }, [apiDispatch]);
+  const memo = useMemo(() => {
+    return { summaryDataDispatch: summaryDataDispatch };
+  }, [summaryDataDispatch]);
 
   // callbacks
-  const handleClickUpdateCount = () => setCount(count + 1);
+  const handleClicks = (
+    id: string,
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void => {
+    event.preventDefault();
+    setClickedBtnSource({
+      ...clickedBtnSource,
+      home: id
+    });
+  };
 
-  // functions unrelated to state
-  console.log(apiState);
+  // other code
+  console.log(clickedBtnSource.home);
+  console.log(summaryData);
 
   // JSX
   return (
-    <HomeContext.Provider value={apiContext}>
+    <AppState.Provider value={memo.summaryDataDispatch}>
       <div>
         <Box sx={{ display: 'flex' }}>
           <DrawerAndAppBar />
@@ -47,26 +65,58 @@ const Home = () => {
             variant="contained"
             aria-label="outlined primary button group"
           >
-            <Button onClick={() => apiDispatch({ type: 'FETCH_INIT' })}>Init</Button>
-            <Button onClick={() => apiDispatch({ type: 'FETCH_SUCCESS', data: [] })}>
+            <Button
+              onClick={() =>
+                memo.summaryDataDispatch({ type: 'FETCH_INIT', data: summaryData.data })
+              }
+            >
+              Init
+            </Button>
+            <Button
+              onClick={() =>
+                memo.summaryDataDispatch({
+                  type: 'FETCH_SUCCESS',
+                  data: summaryData.data
+                })
+              }
+            >
               Success
             </Button>
             <Button
               onClick={() =>
-                apiDispatch({ type: 'FETCH_ERROR', error: 'failure to fetch data' })
+                memo.summaryDataDispatch({
+                  type: 'FETCH_ERROR',
+                  data: summaryData.data,
+                  error: 'failure to fetch data'
+                })
               }
             >
               Error
             </Button>
             <Button
-              onClick={() => handleClickUpdateCount()}
+              onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
             >{`Increment count state`}</Button>
           </ButtonGroup>
           {/* <AutoGrid /> */}
         </Box>
       </div>
-    </HomeContext.Provider>
+    </AppState.Provider>
   );
 };
 
 export default Home;
+
+// // side effects
+// useEffect(() => {
+//   const query: paramsGetSummary = {
+//     name: undefined,
+//     desc: undefined,
+//     min_explained_variance: undefined,
+//     max_explained_variance: undefined,
+//     features: undefined
+//   };
+//   const fetchData = async () => {
+//     const data: GLMSummary[] = await getSummary(query);
+//   };
+//   fetchData();
+// }, []);

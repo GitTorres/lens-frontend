@@ -4,9 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useReducer } from 'react';
 
 // view calculations
-export const homeFetchSummaries = async (
-  query: QuerySummary
-): Promise<GLMSummary[]> => {
+export const fetchSummaries = async (query: QuerySummary): Promise<GLMSummary[]> => {
   const { data }: AxiosResponse<GLMSummary[]> = await axios.request({
     method: 'get',
     url: 'http://localhost:8000/modelsummary/regression/',
@@ -16,40 +14,81 @@ export const homeFetchSummaries = async (
   return data;
 };
 
-// view interfaces
-export interface FetchState<T> {
-  status: 'none' | 'fetching' | 'success' | 'failure';
+export interface apiFetchResult<T> {
+  status: 'NONE' | 'FETCH' | 'SUCCESS' | 'FAIL';
   data: T | undefined;
   error: string;
 }
 
-export type FetchAction<T> =
-  | { type: 'FETCH_INIT' }
-  | { type: 'FETCH_SUCCESS'; data: T }
-  | { type: 'FETCH_ERROR'; error: string };
+export type apiFetchAction<T> =
+  | { type: 'FETCH_INIT'; data: T | undefined }
+  | { type: 'FETCH_SUCCESS'; data: T | undefined }
+  | { type: 'FETCH_ERROR'; data: T | undefined; error: string };
 
-export interface HomeState {
-  //   summaryData: GLMSummary[] | undefined;
-  summaryData: FetchState<GLMSummary[]>;
-}
-
-export const summaryDataDefault: FetchState<GLMSummary[]> = {
-  status: 'none',
+const summaryDataOnMount: apiFetchResult<GLMSummary[]> = {
+  status: 'NONE',
   data: [],
   error: ''
 };
 
-// view reducers
-export const fetchSummaryData = (
+export const fetchActionTemplate: apiFetchAction<GLMSummary[]> = {
+  type: 'FETCH_INIT',
+  data: []
+};
+
+// fetching model summary data
+export const reducerSummaryData = (
   state: HomeState['summaryData'],
-  action: FetchAction<GLMSummary[]>
-): HomeState['data'] => {
+  action: apiFetchAction<GLMSummary[]>
+): HomeState['summaryData'] => {
   switch (action.type) {
     case 'FETCH_INIT':
-      return { ...state, status: 'fetching', error: '' };
+      return { ...state, status: 'FETCH', error: '' };
     case 'FETCH_SUCCESS':
-      return { ...state, status: 'success', data: action.data, error: '' };
+      return { ...state, status: 'SUCCESS', data: action.data, error: '' };
     case 'FETCH_ERROR':
-      return { ...state, status: 'failure', error: action.error };
+      return { ...state, status: 'FAIL', error: action.error };
   }
 };
+
+// view interfaces
+
+// mention of iterating through union types @ shorturl.at/jwxWY
+// type ButtonSources =
+//   | 'NONE'
+//   | 'DRAWER.MODEL_IMPORT'
+//   | 'HOME.FETCH_INIT'
+//   | 'HOME.FETCH_SUCCESS'
+//   | 'HOME.FETCH_ERROR';
+
+// specified as an object instead of a type to allow autocomplete inside JSX
+export const btnSources = {
+  drawer: {
+    modelImport: 'DRAWER.MODEL_IMPORT'
+  },
+  home: {
+    fetchInit: 'HOME.FETCH_INIT',
+    fetchSuccess: 'HOME.FETCH_SUCCESS',
+    fetchError: 'HOME.FETCH_ERROR',
+    updateCount: 'HOME.UPDATE_COUNT'
+  }
+};
+
+export interface HomeState {
+  //   summaryData: GLMSummary[] | undefined;
+  summaryData: apiFetchResult<GLMSummary[]>;
+  clickedBtnSource: {
+    drawer: string; // be more specific later on
+    home: string; // be more specific later on
+  };
+}
+
+export const homeStateOnMount: HomeState = {
+  summaryData: summaryDataOnMount,
+  clickedBtnSource: {
+    drawer: 'NONE',
+    home: 'NONE'
+  }
+};
+
+// view reducers

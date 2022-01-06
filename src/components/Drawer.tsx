@@ -15,11 +15,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { DrawerProps, Skeleton, useThemeProps } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { getSummary } from '../api/request';
-import { GLMSummary, paramsGetSummary } from '../types';
-import { UpdateStateFunction } from '../types';
-import { Action, HomeContext } from './Home';
-import { LoadingButton } from '@mui/lab';
+import { AppState } from './Home';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -74,39 +70,21 @@ interface AppDrawerProps extends Partial<DrawerProps> {
 }
 
 const AppDrawer = React.memo((props: AppDrawerProps) => {
-  // state
-  const [isLoadingData, setIsLoadingData] = useState(false);
-
   // props destructuring
   const { variant, open, handleDrawerClose } = props;
-  const { dispatch } = useContext(HomeContext);
+  const dispatch = useContext(AppState);
 
   // applying theming
   const theme = useTheme();
 
   // component callbacks
-  const handleClickLoadModels = () => setIsLoadingData(true);
+  const handleClickLoadModels = () => console.log('clickerooni');
   const handleClickShowModel = (
     event: React.MouseEvent<HTMLDivElement>,
     text: string
   ): void => {
     event.preventDefault();
   };
-
-  // side effects
-  useEffect(() => {
-    const query: paramsGetSummary = {
-      name: undefined,
-      desc: undefined,
-      min_explained_variance: undefined,
-      max_explained_variance: undefined,
-      features: undefined
-    };
-    const fetchData = async () => {
-      const data: GLMSummary[] = await getSummary(query);
-    };
-    fetchData();
-  }, []);
 
   // report the name of the clicked drawer item to the parent component that
   // can render the Plotting Grid

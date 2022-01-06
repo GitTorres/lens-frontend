@@ -8,7 +8,6 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AppDrawer from './Drawer';
 import { UpdateStateFunction } from '../types';
-import { Action } from './Home';
 // import { HomeComponentStateData, StateHandler } from './Home';
 
 export const drawerWidth = 240;
@@ -35,10 +34,7 @@ const AppBar = styled(MuiAppBar, {
   })
 }));
 
-interface Props {
-  dispatch?: React.Dispatch<Action>;
-}
-const DrawerAndAppBar = ({ dispatch }: Props) => {
+const DrawerAndAppBar = () => {
   // const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
