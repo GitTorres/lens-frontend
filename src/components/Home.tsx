@@ -28,6 +28,11 @@ export const AppState = React.createContext<ButtonCallback>(() => {
   return {};
 });
 
+// const useFetchSummaries = () => {
+//   // move related state and related useEffect in
+
+// }
+
 const Home = () => {
   // button click tracker
   const [buttonClickEvent, setButtonClickEvent] = useState(
@@ -59,6 +64,8 @@ const Home = () => {
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
       case 'FETCH_INIT': {
+        // migrate to handleFetch() callback
+
         const currentTime = new Date().getTime();
         if (currentTime - summaryData.lastUpdated > 1000) {
           // proceed with fetch if no cooldown
@@ -75,6 +82,7 @@ const Home = () => {
               time: currentTime
             });
           });
+          console.log('re-render due to status change');
         }
       }
     }
