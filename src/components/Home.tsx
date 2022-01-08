@@ -1,25 +1,56 @@
-import React, { useState, useReducer, useMemo } from 'react';
+import React, { useState, useReducer, useMemo, useEffect, useCallback } from 'react';
 import DrawerAndAppBar from '../components/DrawerAndAppBar';
 import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
-import { GLMSummary } from '../types';
+import { GLMSummary, QuerySummary } from '../types';
 import { Button, ButtonGroup } from '@mui/material';
 import {
   reducerSummaryData,
   homeStateOnMount,
-  btnSources,
-  fetchActionTemplate
+  fetchActionTemplate,
+  approvedActivity,
+  ApprovedButtonActions,
+  ApprovedButtonSources,
+  ButtonClickEvent,
+  fetchSummaries
 } from './HomeData';
 
-// contexts
-export const AppState = React.createContext<React.Dispatch<typeof fetchActionTemplate>>(
-  () => fetchActionTemplate
-);
+export const { approvedActions, approvedSources } = approvedActivity;
+
+// eslint-disable-next-line max-len
+// createContext requires an interface matching what will be passed to the Context Provider
+type ButtonCallback = (
+  { buttonId, purposeOfClick }: Omit<ButtonClickEvent, 'timeOfClick'>,
+  event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
+) => void;
+
+export const AppState = React.createContext<ButtonCallback>(() => {
+  return {};
+});
 
 const Home = () => {
   // button click tracker
-  const [clickedBtnSource, setClickedBtnSource] = useState(
-    homeStateOnMount.clickedBtnSource
+  const [buttonClickEvent, setButtonClickEvent] = useState(
+    homeStateOnMount.buttonClick
+  );
+
+  const updateLastClicked: ButtonCallback = useCallback(
+    ({ buttonId, purposeOfClick }, event) => {
+      event.preventDefault();
+
+      // setButtonClickEvent({
+      //   buttonId: buttonId,
+      //   purposeOfClick: purposeOfClick,
+      //   timeOfClick: 0
+      // });
+
+      setButtonClickEvent({
+        buttonId: buttonId,
+        purposeOfClick: purposeOfClick,
+        timeOfClick: new Date().getTime()
+      });
+    },
+    []
   );
 
   // async data fetch reducer
@@ -29,34 +60,43 @@ const Home = () => {
   );
 
   // handle API requests with side effects
-  // useEffect(() => {
-  //   const currentRenderTime = new Date().getTime();
-  // }, []);
+  useEffect(() => {
+    switch (buttonClickEvent.purposeOfClick) {
+      case 'FETCH_INIT': {
+        // set to fetching...
+        summaryDataDispatch({
+          type: 'FETCH_INIT',
+          timeOfRequest: new Date().getTime()
+        });
 
-  //  no need to memoize because the dispatch doesn't change
-  // const memo = useMemo(() => {
-  //   return { summaryDataDispatch: summaryDataDispatch };
-  // }, [summaryDataDispatch]);
-
-  // callbacks
-  const handleClicks = (
-    id: string,
-    event: React.MouseEvent<HTMLButtonElement>
-  ): void => {
-    event.preventDefault();
-    setClickedBtnSource({
-      ...clickedBtnSource,
-      home: id
-    });
-  };
+        // api fetch action
+        fetchSummaries({
+          name: '',
+          desc: '',
+          min_explained_variance: 0,
+          max_explained_variance: 1,
+          features: []
+        }).then((data) => {
+          summaryDataDispatch({
+            type: 'FETCH_SUCCESS',
+            data: data
+          });
+        });
+      }
+    }
+  }, [buttonClickEvent.purposeOfClick, buttonClickEvent.timeOfClick]);
 
   // other code
-  console.log(clickedBtnSource.home);
+  // console.log(
+  //   `id: ${buttonClickEvent.buttonId} | purpose: ${buttonClickEvent.purposeOfClick}`
+  // );
+
+  console.log(buttonClickEvent);
   console.log(summaryData);
 
   // JSX
   return (
-    <AppState.Provider value={summaryDataDispatch}>
+    <AppState.Provider value={updateLastClicked}>
       <div>
         <Box sx={{ display: 'flex' }}>
           <DrawerAndAppBar />
@@ -72,40 +112,19 @@ const Home = () => {
             aria-label="outlined primary button group"
           >
             <Button
-              onClick={() =>
-                summaryDataDispatch({
-                  type: 'FETCH_INIT',
-                  timeOfRequest: 0,
-                  data: summaryData.data
-                })
-              }
+              onClick={(event) => {
+                const buttonId = approvedSources.home.fetchInitButton;
+                const purposeOfClick = approvedActions.fetchSummaryData;
+                updateLastClicked({ buttonId, purposeOfClick }, event);
+              }}
             >
               Init
             </Button>
             <Button
-              onClick={() =>
-                summaryDataDispatch({
-                  type: 'FETCH_SUCCESS',
-                  data: summaryData.data
-                })
-              }
+            // onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
             >
-              Success
+              Do Nothing
             </Button>
-            <Button
-              onClick={() =>
-                summaryDataDispatch({
-                  type: 'FETCH_ERROR',
-                  data: summaryData.data,
-                  error: 'failure to fetch data'
-                })
-              }
-            >
-              Error
-            </Button>
-            <Button
-              onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
-            >{`Increment count state`}</Button>
           </ButtonGroup>
           {/* <AutoGrid /> */}
         </Box>
@@ -115,18 +134,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// // side effects
-// useEffect(() => {
-//   const query: paramsGetSummary = {
-//     name: undefined,
-//     desc: undefined,
-//     min_explained_variance: undefined,
-//     max_explained_variance: undefined,
-//     features: undefined
-//   };
-//   const fetchData = async () => {
-//     const data: GLMSummary[] = await getSummary(query);
-//   };
-//   fetchData();
-// }, []);

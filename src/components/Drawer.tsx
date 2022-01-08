@@ -15,7 +15,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { DrawerProps, Skeleton, useThemeProps } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { AppState } from './Home';
+import { AppState, approvedSources, approvedActions } from './Home';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -72,17 +72,11 @@ interface AppDrawerProps extends Partial<DrawerProps> {
 const AppDrawer = React.memo((props: AppDrawerProps) => {
   // props destructuring
   const { variant, open, handleDrawerClose } = props;
-  const dispatch = useContext(AppState);
+  const updateLastClicked = useContext(AppState);
 
   // applying theming
   const theme = useTheme();
 
-  // component callbacks
-  const handleClickLoadModels = () =>
-    dispatch({
-      type: 'FETCH_INIT',
-      data: []
-    });
   const handleClickShowModel = (
     event: React.MouseEvent<HTMLDivElement>,
     text: string
@@ -105,7 +99,13 @@ const AppDrawer = React.memo((props: AppDrawerProps) => {
       </DrawerHeader>
       <Divider />
       <List dense={true}>
-        <ListItemButton onClick={() => handleClickLoadModels()}>
+        <ListItemButton
+          onClick={(event) => {
+            const buttonId = approvedSources.drawer.modelImportButton;
+            const purposeOfClick = approvedActions.fetchSummaryData;
+            updateLastClicked({ buttonId, purposeOfClick }, event);
+          }}
+        >
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
