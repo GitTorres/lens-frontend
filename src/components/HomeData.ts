@@ -20,27 +20,26 @@ export const fetchSummaries = async (query: QuerySummary): Promise<GLMSummary[]>
 // somewhat loose with the unions here
 // so that this interface can be used more places
 export interface apiFetchResult<T> {
-  status: 'NONE' | 'FETCH' | 'SUCCESS' | 'FAIL';
+  status: 'NONE' | 'SUCCESS' | 'FAIL';
   data: T | undefined;
   error: string;
-  timeOfRequest: number;
+  lastUpdated: number;
 }
 
 export type apiFetchAction<T> =
-  | { type: 'FETCH_INIT'; timeOfRequest: number }
-  | { type: 'FETCH_SUCCESS'; data: T | undefined }
-  | { type: 'FETCH_ERROR'; error: string };
+  | { type: 'NONE' }
+  | { type: 'FETCH_SUCCESS'; data: T | undefined; time: number }
+  | { type: 'FETCH_ERROR'; error: string; time: number };
 
 const summaryDataOnMount: apiFetchResult<GLMSummary[]> = {
   status: 'NONE',
   data: undefined,
   error: '',
-  timeOfRequest: 0
+  lastUpdated: 0
 };
 
 export const fetchActionTemplate: apiFetchAction<GLMSummary[]> = {
-  type: 'FETCH_INIT',
-  timeOfRequest: 0
+  type: 'NONE'
 };
 
 // fetching model summary data
@@ -48,23 +47,24 @@ export const reducerSummaryData = (
   state: HomeState['summaryData'],
   action: apiFetchAction<GLMSummary[]>
 ): HomeState['summaryData'] => {
-  const isTooSoonForNewRequest = new Date().getTime() - state.timeOfRequest < 1000;
-  console.log(isTooSoonForNewRequest);
-
-  if (isTooSoonForNewRequest) return state;
-  else {
-    switch (action.type) {
-      case 'FETCH_INIT':
-        return {
-          ...state,
-          timeOfRequest: action.timeOfRequest,
-          status: 'FETCH'
-        };
-      case 'FETCH_SUCCESS':
-        return { ...state, status: 'SUCCESS', data: action.data, error: '' };
-      case 'FETCH_ERROR':
-        return { ...state, status: 'FAIL', error: action.error };
-    }
+  switch (action.type) {
+    case 'NONE':
+      return state;
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        status: 'SUCCESS',
+        data: action.data,
+        error: '',
+        lastUpdated: action.time
+      };
+    case 'FETCH_ERROR':
+      return {
+        ...state,
+        status: 'FAIL',
+        error: action.error,
+        lastUpdated: action.time
+      };
   }
 };
 

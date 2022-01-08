@@ -38,11 +38,7 @@ const Home = () => {
     ({ buttonId, purposeOfClick }, event) => {
       event.preventDefault();
 
-      // setButtonClickEvent({
-      //   buttonId: buttonId,
-      //   purposeOfClick: purposeOfClick,
-      //   timeOfClick: 0
-      // });
+      console.log('re-render due to button click');
 
       setButtonClickEvent({
         buttonId: buttonId,
@@ -63,36 +59,37 @@ const Home = () => {
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
       case 'FETCH_INIT': {
-        // set to fetching...
-        summaryDataDispatch({
-          type: 'FETCH_INIT',
-          timeOfRequest: new Date().getTime()
-        });
-
-        // api fetch action
-        fetchSummaries({
-          name: '',
-          desc: '',
-          min_explained_variance: 0,
-          max_explained_variance: 1,
-          features: []
-        }).then((data) => {
-          summaryDataDispatch({
-            type: 'FETCH_SUCCESS',
-            data: data
+        const currentTime = new Date().getTime();
+        if (currentTime - summaryData.lastUpdated > 1000) {
+          // proceed with fetch if no cooldown
+          fetchSummaries({
+            name: '',
+            desc: '',
+            min_explained_variance: 0,
+            max_explained_variance: 1,
+            features: []
+          }).then((data) => {
+            summaryDataDispatch({
+              type: 'FETCH_SUCCESS',
+              data: data,
+              time: currentTime
+            });
           });
-        });
+        }
       }
     }
-  }, [buttonClickEvent.purposeOfClick, buttonClickEvent.timeOfClick]);
+  }, [
+    buttonClickEvent.purposeOfClick,
+    buttonClickEvent.timeOfClick,
+    summaryData.lastUpdated
+  ]);
 
   // other code
   // console.log(
   //   `id: ${buttonClickEvent.buttonId} | purpose: ${buttonClickEvent.purposeOfClick}`
   // );
 
-  console.log(buttonClickEvent);
-  console.log(summaryData);
+  // console.log(buttonClickEvent);
 
   // JSX
   return (
