@@ -1,7 +1,6 @@
 import { QuerySummary } from '../types';
 import { GLMSummary } from '../types';
 import axios, { AxiosResponse } from 'axios';
-import { useReducer } from 'react';
 
 ////////////////////////
 ////////////// API Data

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AppDrawer from './Drawer';
-import { UpdateStateFunction } from '../types';
 // import { HomeComponentStateData, StateHandler } from './Home';
 
 export const drawerWidth = 240;

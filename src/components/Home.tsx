@@ -1,16 +1,12 @@
-import React, { useState, useReducer, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import DrawerAndAppBar from '../components/DrawerAndAppBar';
 import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
-import { GLMSummary, QuerySummary } from '../types';
 import { Button, ButtonGroup } from '@mui/material';
 import {
   reducerSummaryData,
   homeStateOnMount,
-  fetchActionTemplate,
   approvedActivity,
-  ApprovedButtonActions,
-  ApprovedButtonSources,
   ButtonClickEvent,
   fetchSummaries
 } from './HomeData';
