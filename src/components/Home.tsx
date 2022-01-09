@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect, useCallback } from 'react';
+import React, { useState, useReducer, useEffect, useMemo, useCallback } from 'react';
 import DrawerAndAppBar from '../components/DrawerAndAppBar';
 import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
@@ -10,24 +10,28 @@ import {
   ButtonClickEvent,
   fetchSummaries
 } from './HomeData';
+import { GLMSummary } from '../types';
 
 export const { approvedActions, approvedSources } = approvedActivity;
 
 // eslint-disable-next-line max-len
 // createContext requires an interface matching what will be passed to the Context Provider
 type ButtonCallback = (
-  { buttonId, purposeOfClick }: Omit<ButtonClickEvent, 'timeOfClick'>,
+  { buttonId, buttonKey, purposeOfClick }: Omit<ButtonClickEvent, 'timeOfClick'>,
   event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
 ) => void;
 
-export const AppState = React.createContext<ButtonCallback>(() => {
-  return {};
+interface AppContext {
+  updateLastClicked: ButtonCallback;
+  modelNames: string[];
+}
+
+export const AppContext = React.createContext<AppContext>({
+  updateLastClicked: () => {
+    return {};
+  },
+  modelNames: []
 });
-
-// const useFetchSummaries = () => {
-//   // move related state and related useEffect in
-
-// }
 
 const Home = () => {
   // button click tracker
@@ -35,14 +39,16 @@ const Home = () => {
     homeStateOnMount.buttonClick
   );
 
+  // should not have any state deps
   const updateLastClicked: ButtonCallback = useCallback(
-    ({ buttonId, purposeOfClick }, event) => {
+    ({ buttonId, buttonKey, purposeOfClick }, event) => {
       event.preventDefault();
 
-      console.log('re-render due to button click');
+      console.log('home: re-render due to button click');
 
       setButtonClickEvent({
         buttonId: buttonId,
+        buttonKey: buttonKey ? buttonKey : 'NONE', // explore other ways to set this
         purposeOfClick: purposeOfClick,
         timeOfClick: new Date().getTime()
       });
@@ -56,14 +62,19 @@ const Home = () => {
     homeStateOnMount.summaryData
   );
 
-  // handle API requests with side effects
+  const getModelNames = useCallback((): string[] => {
+    const modelSummaries = summaryData.data;
+    return modelSummaries ? modelSummaries.map((model) => model.name) : [];
+  }, [summaryData.data]);
+
+  // handle effects of button clicks
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
       case 'FETCH_INIT': {
         // migrate to handleFetch() callback
 
         const currentTime = new Date().getTime();
-        if (currentTime - summaryData.lastUpdated > 1000) {
+        if (currentTime - summaryData.lastUpdated > 2000) {
           // proceed with fetch if no cooldown
           fetchSummaries({
             name: '',
@@ -78,26 +89,30 @@ const Home = () => {
               time: currentTime
             });
           });
-          console.log('re-render due to status change');
+          console.log('home: re-render due to status change');
         }
+
+        return;
+      }
+      case 'SHOW_MODEL': {
+        // show model things
+        console.log(buttonClickEvent.buttonKey);
+        return;
       }
     }
-  }, [
-    buttonClickEvent.purposeOfClick,
-    buttonClickEvent.timeOfClick,
-    summaryData.lastUpdated
-  ]);
+  }, [buttonClickEvent, summaryData.lastUpdated]);
 
-  // other code
-  // console.log(
-  //   `id: ${buttonClickEvent.buttonId} | purpose: ${buttonClickEvent.purposeOfClick}`
-  // );
-
-  // console.log(buttonClickEvent);
+  // memoizing the context
+  const appContext = useMemo(() => {
+    return {
+      updateLastClicked: updateLastClicked,
+      modelNames: getModelNames()
+    };
+  }, [getModelNames, updateLastClicked]);
 
   // JSX
   return (
-    <AppState.Provider value={updateLastClicked}>
+    <AppContext.Provider value={appContext}>
       <div>
         <Box sx={{ display: 'flex' }}>
           <DrawerAndAppBar />
@@ -130,7 +145,7 @@ const Home = () => {
           {/* <AutoGrid /> */}
         </Box>
       </div>
-    </AppState.Provider>
+    </AppContext.Provider>
   );
 };
 

@@ -74,18 +74,18 @@ export const reducerSummaryData = (
 export type ApprovedButtonSources =
   | 'NONE'
   | 'DRAWER.MODEL_IMPORT'
-  | 'HOME.FETCH_INIT'
-  | 'HOME.FETCH_SUCCESS'
-  | 'HOME.FETCH_ERROR';
-export type ApprovedButtonActions = 'NONE' | 'FETCH_INIT';
+  | 'DRAWER.MODEL_NAME'
+  | 'HOME.FETCH_INIT';
+export type ApprovedButtonActions = 'NONE' | 'FETCH_INIT' | 'SHOW_MODEL';
 
 export interface ButtonClickEvent {
   buttonId: ApprovedButtonSources;
+  buttonKey?: string | undefined;
   purposeOfClick: ApprovedButtonActions;
   timeOfClick: number;
 }
 
-export const buttonClickEventTemplate: ButtonClickEvent = {
+export const buttonClickEventOnMount: ButtonClickEvent = {
   buttonId: 'NONE',
   purposeOfClick: 'NONE',
   timeOfClick: 0
@@ -96,15 +96,15 @@ interface ApprovedActivity {
   approvedSources: {
     drawer: {
       modelImportButton: 'DRAWER.MODEL_IMPORT';
+      modelNameButton: 'DRAWER.MODEL_NAME';
     };
     home: {
       fetchInitButton: 'HOME.FETCH_INIT';
-      fetchSuccessButton: 'HOME.FETCH_SUCCESS';
-      fetchErrorButton: 'HOME.FETCH_ERROR';
     };
   };
   approvedActions: {
     fetchSummaryData: 'FETCH_INIT';
+    showModelDetails: 'SHOW_MODEL';
   };
 }
 
@@ -112,16 +112,16 @@ interface ApprovedActivity {
 export const approvedActivity: ApprovedActivity = {
   approvedSources: {
     drawer: {
-      modelImportButton: 'DRAWER.MODEL_IMPORT'
+      modelImportButton: 'DRAWER.MODEL_IMPORT',
+      modelNameButton: 'DRAWER.MODEL_NAME'
     },
     home: {
-      fetchInitButton: 'HOME.FETCH_INIT',
-      fetchSuccessButton: 'HOME.FETCH_SUCCESS',
-      fetchErrorButton: 'HOME.FETCH_ERROR'
+      fetchInitButton: 'HOME.FETCH_INIT'
     }
   },
   approvedActions: {
-    fetchSummaryData: 'FETCH_INIT'
+    fetchSummaryData: 'FETCH_INIT',
+    showModelDetails: 'SHOW_MODEL'
   }
 };
 
@@ -133,9 +133,5 @@ export interface HomeState {
 
 export const homeStateOnMount: HomeState = {
   summaryData: summaryDataOnMount,
-  buttonClick: {
-    buttonId: 'NONE',
-    purposeOfClick: 'NONE',
-    timeOfClick: 0
-  }
+  buttonClick: buttonClickEventOnMount
 };

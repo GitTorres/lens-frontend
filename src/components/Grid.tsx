@@ -12,7 +12,7 @@ import BasicCard from './Card';
 //   color: theme.palette.text.secondary,
 // }));
 
-const AutoGrid = () => {
+const AutoGrid = React.memo(() => {
   return (
     <Box
       sx={{
@@ -32,6 +32,6 @@ const AutoGrid = () => {
       </Grid>
     </Box>
   );
-};
+});
 
 export default AutoGrid;

@@ -27,7 +27,8 @@ const BasicCard = ({
   width: number;
   height: number;
 }) => {
-  // const { innerWidth } = window; // use later when we want to dynamically resize the plot with re-renders
+  // const { innerWidth } = window;
+  // use later when we want to dynamically resize the plot with re-renders
 
   return (
     <Card sx={{ margin: '10px', width: width, height: height }}>

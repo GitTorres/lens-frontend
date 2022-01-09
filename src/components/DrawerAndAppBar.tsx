@@ -68,7 +68,6 @@ const DrawerAndAppBar = () => {
         </Toolbar>
       </AppBar>
       <AppDrawer
-        // dispatch={dispatch}
         variant="permanent"
         open={open}
         handleDrawerClose={handleDrawerClose}

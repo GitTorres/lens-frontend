@@ -14,7 +14,7 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { DrawerProps, Skeleton } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { AppState, approvedSources, approvedActions } from './Home';
+import { AppContext, approvedSources, approvedActions } from './Home';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -71,7 +71,7 @@ interface AppDrawerProps extends Partial<DrawerProps> {
 const AppDrawer = React.memo((props: AppDrawerProps) => {
   // props destructuring
   const { variant, open, handleDrawerClose } = props;
-  const updateLastClicked = useContext(AppState);
+  const { updateLastClicked, modelNames } = useContext(AppContext);
 
   // applying theming
   // const theme = useTheme();
@@ -87,7 +87,7 @@ const AppDrawer = React.memo((props: AppDrawerProps) => {
   // can render the Plotting Grid
   // clickedItemName(text);
 
-  console.log('re-render drawer');
+  console.log('drawer: re-render');
 
   return (
     <Drawer variant={variant} open={open}>
@@ -117,10 +117,16 @@ const AppDrawer = React.memo((props: AppDrawerProps) => {
           <ListItemText primary="Compare" />
         </ListItemButton>
         <Divider />
-        {['billy', 'joe', 'ray'].map((text, index) => (
+        {modelNames.map((text, index) => (
           <ListItemButton
             key={text}
-            onClick={(event) => handleClickShowModel(event, text)}
+            onClick={(event) => {
+              const buttonId = approvedSources.drawer.modelNameButton;
+              const purposeOfClick = approvedActions.showModelDetails;
+              const buttonKey = text;
+
+              updateLastClicked({ buttonId, buttonKey, purposeOfClick }, event);
+            }}
           >
             <ListItemIcon>
               <ShowChartIcon />
