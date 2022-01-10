@@ -21,12 +21,12 @@ type ButtonCallback = (
   event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
 ) => void;
 
-interface AppContext {
+interface AppContextDrawer {
   updateLastClicked: ButtonCallback;
   modelNames: string[];
 }
 
-export const AppContext = React.createContext<AppContext>({
+export const AppContextDrawer = React.createContext<AppContextDrawer>({
   updateLastClicked: () => {
     return {};
   },
@@ -67,6 +67,11 @@ const Home = () => {
     return modelSummaries ? modelSummaries.map((model) => model.name) : [];
   }, [summaryData.data]);
 
+  const getFeatureSummaries = useCallback((): number[] => {
+    const numCards = Math.ceil(Math.random() * 10);
+    return [...Array(numCards).keys()];
+  }, []);
+
   // handle effects of button clicks
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
@@ -94,16 +99,17 @@ const Home = () => {
 
         return;
       }
-      case 'SHOW_MODEL': {
-        // show model things
-        console.log(buttonClickEvent.buttonKey);
-        return;
-      }
+      // case 'SHOW_MODEL': {
+      //   // filter to feature summaries and
+      //   console.log(buttonClickEvent.buttonKey);
+      //   const summaries = getFeatureSummaries();
+      //   return;
+      // }
     }
   }, [buttonClickEvent, summaryData.lastUpdated]);
 
   // memoizing the context
-  const appContext = useMemo(() => {
+  const appContextDrawer = useMemo(() => {
     return {
       updateLastClicked: updateLastClicked,
       modelNames: getModelNames()
@@ -112,41 +118,44 @@ const Home = () => {
 
   // JSX
   return (
-    <AppContext.Provider value={appContext}>
+    <AppContextDrawer.Provider value={appContextDrawer}>
       <div>
         <Box sx={{ display: 'flex' }}>
           <DrawerAndAppBar />
-          <ButtonGroup
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              marginRight: '10px',
-              marginLeft: '10px',
-              marginTop: '60px'
-            }}
-            variant="contained"
-            aria-label="outlined primary button group"
-          >
-            <Button
-              onClick={(event) => {
-                const buttonId = approvedSources.home.fetchInitButton;
-                const purposeOfClick = approvedActions.fetchSummaryData;
-                updateLastClicked({ buttonId, purposeOfClick }, event);
-              }}
-            >
-              Init
-            </Button>
-            <Button
-            // onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
-            >
-              Do Nothing
-            </Button>
-          </ButtonGroup>
-          {/* <AutoGrid /> */}
+          <AutoGrid key={buttonClickEvent.buttonKey} summaries={getFeatureSummaries} />
         </Box>
       </div>
-    </AppContext.Provider>
+    </AppContextDrawer.Provider>
   );
 };
 
 export default Home;
+
+// {
+//   /* <ButtonGroup
+//             sx={{
+//               flexGrow: 1,
+//               p: 3,
+//               marginRight: '10px',
+//               marginLeft: '10px',
+//               marginTop: '60px'
+//             }}
+//             variant="contained"
+//             aria-label="outlined primary button group"
+//           >
+//             <Button
+//               onClick={(event) => {
+//                 const buttonId = approvedSources.home.fetchInitButton;
+//                 const purposeOfClick = approvedActions.fetchSummaryData;
+//                 updateLastClicked({ buttonId, purposeOfClick }, event);
+//               }}
+//             >
+//               Init
+//             </Button>
+//             <Button
+//             // onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
+//             >
+//               Do Nothing
+//             </Button>
+//           </ButtonGroup> */
+// }

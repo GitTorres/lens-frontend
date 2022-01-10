@@ -12,26 +12,33 @@ import BasicCard from './Card';
 //   color: theme.palette.text.secondary,
 // }));
 
-const AutoGrid = React.memo(() => {
-  return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: 3,
-        marginRight: '10px',
-        marginLeft: '10px',
-        marginTop: '60px'
-      }}
-    >
-      <Grid
-        container
-        spacing={{ xs: 2, md: 2 }}
-        columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
+const AutoGrid = React.memo(
+  ({ summaries }: { key?: string; summaries: () => number[] }) => {
+    console.log('grid re-render ');
+    console.log(summaries());
+
+    return (
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginRight: '10px',
+          marginLeft: '10px',
+          marginTop: '60px'
+        }}
       >
-        <BasicCard title="Model 1" width={725} height={575} />
-      </Grid>
-    </Box>
-  );
-});
+        <Grid
+          container
+          spacing={{ xs: 2, md: 2 }}
+          columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
+        >
+          {summaries().map((k) => (
+            <BasicCard title="Model 1" width={725} height={575} />
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+);
 
 export default AutoGrid;
