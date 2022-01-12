@@ -10,7 +10,7 @@ import {
   ButtonClickEvent,
   fetchSummaries
 } from './HomeData';
-import { GLMSummary } from '../types';
+import { FeatureSummary, GLMSummary } from '../types';
 
 export const { approvedActions, approvedSources } = approvedActivity;
 
@@ -21,6 +21,7 @@ type ButtonCallback = (
   event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
 ) => void;
 
+// app context for drawer
 interface AppContextDrawer {
   updateLastClicked: ButtonCallback;
   modelNames: string[];
@@ -33,13 +34,23 @@ export const AppContextDrawer = React.createContext<AppContextDrawer>({
   modelNames: []
 });
 
+// app context for plots
+
+interface AppContextGridPlots {
+  modelDetail: GLMSummary | undefined;
+}
+
+export const AppContextGridPlots = React.createContext<AppContextGridPlots>({
+  modelDetail: undefined
+});
+
 const Home = () => {
   // button click tracker
   const [buttonClickEvent, setButtonClickEvent] = useState(
     homeStateOnMount.buttonClick
   );
 
-  // should not have any state deps
+  // button click tracker update
   const updateLastClicked: ButtonCallback = useCallback(
     ({ buttonId, buttonKey, purposeOfClick }, event) => {
       event.preventDefault();
@@ -62,25 +73,33 @@ const Home = () => {
     homeStateOnMount.summaryData
   );
 
+  // model names for drawer
   const getModelNames = useCallback((): string[] => {
     const modelSummaries = summaryData.data;
     return modelSummaries ? modelSummaries.map((model) => model.name) : [];
   }, [summaryData.data]);
 
-  const getFeatureSummaries = useCallback((): number[] => {
-    const numCards = Math.ceil(Math.random() * 10);
-    return [...Array(numCards).keys()];
-  }, []);
+  // model details
+  const [modelDetail, setModelDetail] = useState<GLMSummary | undefined>(
+    homeStateOnMount.modelDetail
+  );
+
+  // const getModelDetails = useCallback((): GLMSummary | undefined => {
+  //   const response = summaryData?.data
+  //     ?.filter((model) => model.name == buttonClickEvent.buttonKey)
+  //     .pop();
+
+  //   return response;
+  // }, [buttonClickEvent.buttonKey, summaryData.data]);
 
   // handle effects of button clicks
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
-      case 'FETCH_INIT': {
-        // migrate to handleFetch() callback
-
+      case 'FETCH': {
         const currentTime = new Date().getTime();
+
+        // proceed with fetch if no cooldown
         if (currentTime - summaryData.lastUpdated > 2000) {
-          // proceed with fetch if no cooldown
           fetchSummaries({
             name: '',
             desc: '',
@@ -99,16 +118,29 @@ const Home = () => {
 
         return;
       }
-      // case 'SHOW_MODEL': {
-      //   // filter to feature summaries and
-      //   console.log(buttonClickEvent.buttonKey);
-      //   const summaries = getFeatureSummaries();
-      //   return;
-      // }
-    }
-  }, [buttonClickEvent, summaryData.lastUpdated]);
+      case 'SHOW_MODEL': {
+        // update selected feature summary variable
+        const getModelDetails = (modelName: string): GLMSummary | undefined => {
+          const response = summaryData?.data
+            ?.filter((model) => model.name == modelName)
+            .pop();
 
-  // memoizing the context
+          return response;
+        };
+
+        const modelName = buttonClickEvent.buttonKey;
+
+        if (modelName != undefined && modelName != modelDetail?.name) {
+          setModelDetail(getModelDetails(modelName));
+          console.log('home: re-render due to model detail change');
+        }
+
+        return;
+      }
+    }
+  }, [buttonClickEvent, modelDetail, summaryData]);
+
+  // memoizing App Context used by Drawer component
   const appContextDrawer = useMemo(() => {
     return {
       updateLastClicked: updateLastClicked,
@@ -116,46 +148,26 @@ const Home = () => {
     };
   }, [getModelNames, updateLastClicked]);
 
+  // memoizing App Context used by Grid and its descendents
+  const appContextGridPlots = useMemo(() => {
+    return {
+      modelDetail: modelDetail
+    };
+  }, [modelDetail]);
+
   // JSX
   return (
-    <AppContextDrawer.Provider value={appContextDrawer}>
-      <div>
-        <Box sx={{ display: 'flex' }}>
+    <div>
+      <Box sx={{ display: 'flex' }}>
+        <AppContextDrawer.Provider value={appContextDrawer}>
           <DrawerAndAppBar />
-          <AutoGrid key={buttonClickEvent.buttonKey} summaries={getFeatureSummaries} />
-        </Box>
-      </div>
-    </AppContextDrawer.Provider>
+        </AppContextDrawer.Provider>
+        <AppContextGridPlots.Provider value={appContextGridPlots}>
+          <AutoGrid />
+        </AppContextGridPlots.Provider>
+      </Box>
+    </div>
   );
 };
 
 export default Home;
-
-// {
-//   /* <ButtonGroup
-//             sx={{
-//               flexGrow: 1,
-//               p: 3,
-//               marginRight: '10px',
-//               marginLeft: '10px',
-//               marginTop: '60px'
-//             }}
-//             variant="contained"
-//             aria-label="outlined primary button group"
-//           >
-//             <Button
-//               onClick={(event) => {
-//                 const buttonId = approvedSources.home.fetchInitButton;
-//                 const purposeOfClick = approvedActions.fetchSummaryData;
-//                 updateLastClicked({ buttonId, purposeOfClick }, event);
-//               }}
-//             >
-//               Init
-//             </Button>
-//             <Button
-//             // onClick={(e) => handleClicks(btnSources.home.updateCount, e)}
-//             >
-//               Do Nothing
-//             </Button>
-//           </ButtonGroup> */
-// }

@@ -7,7 +7,6 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
-import CardPlot from './CardPlot';
 
 const bull = (
   <Box
@@ -18,14 +17,43 @@ const bull = (
   </Box>
 );
 
-const BasicCard = ({
+// export const PlotCard = ({
+//   title,
+//   width,
+//   height,
+//   children
+// }: {
+//   title: string;
+//   width: number;
+//   height: number;
+//   children: React.ReactNode;
+// }) => {
+//   // const { innerWidth } = window;
+//   // use later when we want to dynamically resize the plot with re-renders
+//   return (
+//     <Card sx={{ margin: '10px', width: width, height: height }}>
+//       <CardContent>
+//         <Typography sx={{ fontSize: 14 }} gutterBottom>
+//           {title}
+//           {bull}
+//           {'20YY-MM-DD HH:MM:SS'}
+//         </Typography>
+//         <FeaturePlot width={width} height={height} />
+//       </CardContent>
+//     </Card>
+//   );
+// };
+
+export const PlotCard = ({
   title,
   width,
-  height
+  height,
+  children
 }: {
   title: string;
   width: number;
   height: number;
+  children: React.ReactNode;
 }) => {
   // const { innerWidth } = window;
   // use later when we want to dynamically resize the plot with re-renders
@@ -35,12 +63,10 @@ const BasicCard = ({
         <Typography sx={{ fontSize: 14 }} gutterBottom>
           {title}
           {bull}
-          {'2021-01-04 04:33:25pm'}
+          {'20YY-MM-DD HH:MM:SS'}
         </Typography>
-        <CardPlot width={width} height={height} />
+        {children}
       </CardContent>
     </Card>
   );
 };
-
-export default BasicCard;

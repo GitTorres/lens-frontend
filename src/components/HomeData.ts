@@ -67,6 +67,22 @@ export const reducerSummaryData = (
   }
 };
 
+//////////////////////////////////////
+////////////// Selected Model Details
+/////////////////////////////////////
+
+const modelDetailOnMount: GLMSummary = {
+  name: '',
+  desc: '',
+  target: '',
+  prediction: '',
+  var_weights: '',
+  link_function: '',
+  error_dist: '',
+  explained_variance: 0,
+  feature_summary: []
+};
+
 ////////////////////////
 ////////////// Button Events
 ////////////////////////
@@ -74,9 +90,8 @@ export const reducerSummaryData = (
 export type ApprovedButtonSources =
   | 'NONE'
   | 'DRAWER.MODEL_IMPORT'
-  | 'DRAWER.MODEL_NAME'
-  | 'HOME.FETCH_INIT';
-export type ApprovedButtonActions = 'NONE' | 'FETCH_INIT' | 'SHOW_MODEL';
+  | 'DRAWER.MODEL_NAME';
+export type ApprovedButtonActions = 'NONE' | 'FETCH' | 'SHOW_MODEL';
 
 export interface ButtonClickEvent {
   buttonId: ApprovedButtonSources;
@@ -98,12 +113,9 @@ interface ApprovedActivity {
       modelImportButton: 'DRAWER.MODEL_IMPORT';
       modelNameButton: 'DRAWER.MODEL_NAME';
     };
-    home: {
-      fetchInitButton: 'HOME.FETCH_INIT';
-    };
   };
   approvedActions: {
-    fetchSummaryData: 'FETCH_INIT';
+    fetchSummaryData: 'FETCH';
     showModelDetails: 'SHOW_MODEL';
   };
 }
@@ -114,13 +126,10 @@ export const approvedActivity: ApprovedActivity = {
     drawer: {
       modelImportButton: 'DRAWER.MODEL_IMPORT',
       modelNameButton: 'DRAWER.MODEL_NAME'
-    },
-    home: {
-      fetchInitButton: 'HOME.FETCH_INIT'
     }
   },
   approvedActions: {
-    fetchSummaryData: 'FETCH_INIT',
+    fetchSummaryData: 'FETCH',
     showModelDetails: 'SHOW_MODEL'
   }
 };
@@ -129,9 +138,11 @@ export interface HomeState {
   //   summaryData: GLMSummary[] | undefined;
   summaryData: apiFetchResult<GLMSummary[]>;
   buttonClick: ButtonClickEvent;
+  modelDetail: GLMSummary;
 }
 
 export const homeStateOnMount: HomeState = {
   summaryData: summaryDataOnMount,
-  buttonClick: buttonClickEventOnMount
+  buttonClick: buttonClickEventOnMount,
+  modelDetail: modelDetailOnMount
 };

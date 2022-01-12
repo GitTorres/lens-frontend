@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Plot, { PlotParams } from 'react-plotly.js';
+import { FeatureSummaryData } from '../types';
 
-const CardPlot = ({ width, height }: { width: number; height: number }) => {
-  const x: number[] = [...Array(50).keys()];
-  const y: number[] = [...Array(50).keys()].map((k) => 1);
-  const y2: number[] = [...y.keys()].map((k) => k + 10);
+export const FeaturePlot = ({
+  name,
+  data,
+  width,
+  height
+}: {
+  name: string;
+  data: FeatureSummaryData;
+  width: number;
+  height: number;
+}) => {
+  const x: number[] = data.bin_edge_right;
+  const y: number[] = data.sum_weight;
+  const y2: number[] = data.wtd_avg_target;
+  const y3: number[] = data.wtd_avg_prediction;
 
   const univariatePlot: PlotParams = {
     data: [
@@ -16,12 +28,20 @@ const CardPlot = ({ width, height }: { width: number; height: number }) => {
         marker: { color: 'red' },
         yaxis: 'y2'
       },
-      { type: 'bar', x: x, y: y }
+      {
+        x: x,
+        y: y3,
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: { color: 'green' },
+        yaxis: 'y2'
+      },
+      { type: 'bar', x: x, y: y, marker: { color: 'orange' } }
     ],
     layout: {
       width: width * 0.95,
       height: height * 0.86,
-      title: 'A Fancy Plot',
+      title: name,
       yaxis: { title: 'primary axis' },
       yaxis2: { title: 'secondary axis', side: 'right', overlaying: 'y' }
     },
@@ -42,5 +62,3 @@ const CardPlot = ({ width, height }: { width: number; height: number }) => {
     </div>
   );
 };
-
-export default CardPlot;

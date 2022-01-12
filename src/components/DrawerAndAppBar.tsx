@@ -33,7 +33,7 @@ const AppBar = styled(MuiAppBar, {
   })
 }));
 
-const DrawerAndAppBar = () => {
+const DrawerAndAppBar = React.memo(() => {
   // const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -44,6 +44,8 @@ const DrawerAndAppBar = () => {
   const handleDrawerClose = useCallback(() => {
     setOpen(false);
   }, []);
+
+  console.log('drawerAndAppBar: re-render');
 
   return (
     <React.Fragment>
@@ -74,6 +76,6 @@ const DrawerAndAppBar = () => {
       />
     </React.Fragment>
   );
-};
+});
 
 export default DrawerAndAppBar;
