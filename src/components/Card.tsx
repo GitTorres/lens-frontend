@@ -45,12 +45,12 @@ const bull = (
 // };
 
 export const PlotCard = ({
-  title,
+  nameOfModel,
   width,
   height,
   children
 }: {
-  title: string;
+  nameOfModel: string;
   width: number;
   height: number;
   children: React.ReactNode;
@@ -58,10 +58,10 @@ export const PlotCard = ({
   // const { innerWidth } = window;
   // use later when we want to dynamically resize the plot with re-renders
   return (
-    <Card sx={{ margin: '10px', width: width, height: height }}>
+    <Card raised={true} sx={{ margin: '10px', width: width, height: height }}>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} gutterBottom>
-          {title}
+        <Typography sx={{ fontSize: 16 }} gutterBottom>
+          {nameOfModel}
           {bull}
           {'20YY-MM-DD HH:MM:SS'}
         </Typography>

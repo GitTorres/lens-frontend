@@ -36,9 +36,13 @@ const AutoGrid = React.memo(() => {
         columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
       >
         {modelDetail?.feature_summary.map((feature, index) => (
-          <PlotCard key={index} title={`${feature.name}`} width={725} height={575}>
+          <PlotCard key={index} nameOfModel={modelDetail.name} width={725} height={575}>
             <FeaturePlot
-              name={feature.name}
+              nameOfModel={modelDetail.name}
+              nameOfFeature={feature.name}
+              nameOfWeight={modelDetail.var_weights}
+              nameOfTarget={modelDetail.target}
+              nameOfPrediction={modelDetail.prediction}
               data={feature.data}
               width={725}
               height={575}

@@ -76,13 +76,6 @@ const AppDrawer = React.memo((props: AppDrawerProps) => {
   // applying theming
   // const theme = useTheme();
 
-  const handleClickShowModel = (
-    event: React.MouseEvent<HTMLDivElement>,
-    text: string
-  ): void => {
-    event.preventDefault();
-  };
-
   // report the name of the clicked drawer item to the parent component that
   // can render the Plotting Grid
   // clickedItemName(text);
