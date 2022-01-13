@@ -14,7 +14,10 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { DrawerProps, Skeleton } from '@mui/material';
 import { drawerWidth } from './DrawerAndAppBar';
-import { AppContextDrawer, approvedSources, approvedActions } from './Home';
+import { DrawerContext } from './Home';
+import { approvedActivity } from './HomeData';
+
+const { approvedSources, approvedActions } = approvedActivity;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -71,7 +74,7 @@ interface AppDrawerProps extends Partial<DrawerProps> {
 const AppDrawer = React.memo((props: AppDrawerProps) => {
   // props destructuring
   const { variant, open, handleDrawerClose } = props;
-  const { updateLastClicked, modelNames } = useContext(AppContextDrawer);
+  const { updateLastClicked, modelNames } = useContext(DrawerContext);
 
   // applying theming
   // const theme = useTheme();

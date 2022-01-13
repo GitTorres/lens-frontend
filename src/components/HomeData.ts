@@ -83,9 +83,26 @@ const modelDetailOnMount: GLMSummary = {
   feature_summary: []
 };
 
+//////////////////////////
+///////////////// App Context
+/////////////////////////
+
+// app context for drawer
+export interface AppContextDrawer {
+  updateLastClicked: ButtonCallback;
+  modelNames: string[];
+}
+
 ////////////////////////
 ////////////// Button Events
 ////////////////////////
+
+// eslint-disable-next-line max-len
+// createContext requires an interface matching what will be passed to the Context Provider
+export type ButtonCallback = (
+  { buttonId, buttonKey, purposeOfClick }: Omit<ButtonClickEvent, 'timeOfClick'>,
+  event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
+) => void;
 
 export type ApprovedButtonSources =
   | 'NONE'

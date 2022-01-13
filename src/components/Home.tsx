@@ -2,55 +2,43 @@ import React, { useState, useReducer, useEffect, useMemo, useCallback } from 're
 import DrawerAndAppBar from '../components/DrawerAndAppBar';
 import AutoGrid from '../components/Grid';
 import Box from '@mui/material/Box';
-import { Button, ButtonGroup } from '@mui/material';
 import {
   reducerSummaryData,
   homeStateOnMount,
-  approvedActivity,
-  ButtonClickEvent,
+  ButtonCallback,
+  AppContextDrawer,
   fetchSummaries
 } from './HomeData';
-import { FeatureSummary, GLMSummary } from '../types';
+import { GLMSummary, QuerySummary } from '../types';
 
-export const { approvedActions, approvedSources } = approvedActivity;
-
-// eslint-disable-next-line max-len
-// createContext requires an interface matching what will be passed to the Context Provider
-type ButtonCallback = (
-  { buttonId, buttonKey, purposeOfClick }: Omit<ButtonClickEvent, 'timeOfClick'>,
-  event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
-) => void;
-
-// app context for drawer
-interface AppContextDrawer {
-  updateLastClicked: ButtonCallback;
-  modelNames: string[];
-}
-
-export const AppContextDrawer = React.createContext<AppContextDrawer>({
+// context used to pass props to children directly -- do not want parents to re-render
+export const DrawerContext = React.createContext<AppContextDrawer>({
   updateLastClicked: () => {
     return {};
   },
   modelNames: []
 });
 
-// app context for plots
-
-interface AppContextGridPlots {
-  modelDetail: GLMSummary | undefined;
-}
-
-export const AppContextGridPlots = React.createContext<AppContextGridPlots>({
-  modelDetail: undefined
-});
-
 const Home = () => {
-  // button click tracker
+  // stores button click information that initiates some action
   const [buttonClickEvent, setButtonClickEvent] = useState(
     homeStateOnMount.buttonClick
   );
 
-  // button click tracker update
+  // store model summary data
+  // thought -- switch to useState hook?
+  const [summaryData, summaryDataDispatch] = useReducer(
+    reducerSummaryData,
+    homeStateOnMount.summaryData
+  );
+
+  // store model details
+  const [modelDetail, setModelDetail] = useState<GLMSummary | undefined>(
+    homeStateOnMount.modelDetail
+  );
+
+  // callback when buttons are clicks
+  // tells us the source of the button component and the action requested
   const updateLastClicked: ButtonCallback = useCallback(
     ({ buttonId, buttonKey, purposeOfClick }, event) => {
       event.preventDefault();
@@ -67,104 +55,94 @@ const Home = () => {
     []
   );
 
-  // async data fetch reducer
-  const [summaryData, summaryDataDispatch] = useReducer(
-    reducerSummaryData,
-    homeStateOnMount.summaryData
-  );
+  // callback when FETCH action is received from a button click
+  // we fetch model summaries so we can plot as needed
+  const handleActionFetch = useCallback(() => {
+    // compute the fetch cooldown
+    const currentTime = new Date().getTime();
+    const proceed = currentTime - summaryData.lastUpdated > 2000;
 
-  // model names for drawer
-  const getModelNames = useCallback((): string[] => {
-    const modelSummaries = summaryData.data;
-    return modelSummaries ? modelSummaries.map((model) => model.name) : [];
-  }, [summaryData.data]);
+    // proceed with fetch if no cooldown
+    if (proceed) {
+      const query: QuerySummary = {
+        name: '',
+        desc: '',
+        min_explained_variance: 0,
+        max_explained_variance: 1,
+        features: []
+      };
 
-  // model details
-  const [modelDetail, setModelDetail] = useState<GLMSummary | undefined>(
-    homeStateOnMount.modelDetail
-  );
+      // returns a promise
+      const apiResponse = fetchSummaries(query);
 
-  // const getModelDetails = useCallback((): GLMSummary | undefined => {
-  //   const response = summaryData?.data
-  //     ?.filter((model) => model.name == buttonClickEvent.buttonKey)
-  //     .pop();
+      apiResponse.then((data) => {
+        summaryDataDispatch({
+          type: 'FETCH_SUCCESS',
+          data: data,
+          time: currentTime
+        });
+      });
+      console.log('home: re-render due to status change');
+    }
 
-  //   return response;
-  // }, [buttonClickEvent.buttonKey, summaryData.data]);
+    return;
+  }, [summaryData]);
+
+  // callback when SHOW_MODEL action is received from a button click
+  // we filter to selected model to show its details
+  const handleActionShowModel = useCallback(() => {
+    // update selected feature summary variable
+    const getModelDetails = (modelName: string): GLMSummary | undefined => {
+      const modelDetails = summaryData?.data
+        ?.filter((model) => model.name == modelName)
+        .pop();
+
+      return modelDetails;
+    };
+
+    const modelName = buttonClickEvent.buttonKey;
+
+    if (modelName != undefined && modelName != modelDetail?.name) {
+      setModelDetail(getModelDetails(modelName));
+      console.log('home: re-render due to model detail change');
+    }
+  }, [summaryData, modelDetail, buttonClickEvent]);
 
   // handle effects of button clicks
   useEffect(() => {
     switch (buttonClickEvent.purposeOfClick) {
       case 'FETCH': {
-        const currentTime = new Date().getTime();
-
-        // proceed with fetch if no cooldown
-        if (currentTime - summaryData.lastUpdated > 2000) {
-          fetchSummaries({
-            name: '',
-            desc: '',
-            min_explained_variance: 0,
-            max_explained_variance: 1,
-            features: []
-          }).then((data) => {
-            summaryDataDispatch({
-              type: 'FETCH_SUCCESS',
-              data: data,
-              time: currentTime
-            });
-          });
-          console.log('home: re-render due to status change');
-        }
-
+        handleActionFetch();
         return;
       }
       case 'SHOW_MODEL': {
         // update selected feature summary variable
-        const getModelDetails = (modelName: string): GLMSummary | undefined => {
-          const response = summaryData?.data
-            ?.filter((model) => model.name == modelName)
-            .pop();
-
-          return response;
-        };
-
-        const modelName = buttonClickEvent.buttonKey;
-
-        if (modelName != undefined && modelName != modelDetail?.name) {
-          setModelDetail(getModelDetails(modelName));
-          console.log('home: re-render due to model detail change');
-        }
+        handleActionShowModel();
 
         return;
       }
     }
-  }, [buttonClickEvent, modelDetail, summaryData]);
+  }, [buttonClickEvent, handleActionShowModel, handleActionFetch]);
 
-  // memoizing App Context used by Drawer component
-  const appContextDrawer = useMemo(() => {
+  // constructing the context object for the Drawer component
+  // probably overkill to use context, but WORTH IT
+  const drawerContext = useMemo(() => {
     return {
       updateLastClicked: updateLastClicked,
-      modelNames: getModelNames()
+      modelNames: ((): string[] => {
+        return summaryData.data ? summaryData.data.map((model) => model.name) : [];
+      })()
     };
-  }, [getModelNames, updateLastClicked]);
-
-  // memoizing App Context used by Grid and its descendents
-  const appContextGridPlots = useMemo(() => {
-    return {
-      modelDetail: modelDetail
-    };
-  }, [modelDetail]);
+  }, [updateLastClicked, summaryData]);
 
   // JSX
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
-        <AppContextDrawer.Provider value={appContextDrawer}>
+        <DrawerContext.Provider value={drawerContext}>
           <DrawerAndAppBar />
-        </AppContextDrawer.Provider>
-        <AppContextGridPlots.Provider value={appContextGridPlots}>
-          <AutoGrid />
-        </AppContextGridPlots.Provider>
+        </DrawerContext.Provider>
+        <AutoGrid modelDetail={modelDetail} />
       </Box>
     </div>
   );

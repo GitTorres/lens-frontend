@@ -5,7 +5,6 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { PlotCard } from './Card';
 import { GLMSummary } from '../types';
-import { AppContextGridPlots } from './Home';
 import { FeaturePlot } from './CardPlot';
 
 // const Item = styled(Paper)(({ theme }) => ({
@@ -15,43 +14,48 @@ import { FeaturePlot } from './CardPlot';
 //   color: theme.palette.text.secondary,
 // }));
 
-const AutoGrid = React.memo(() => {
-  const { modelDetail } = useContext(AppContextGridPlots);
+const AutoGrid = React.memo(
+  ({ modelDetail }: { modelDetail: GLMSummary | undefined }) => {
+    console.log('grid: re-render');
 
-  console.log('grid: re-render');
-
-  return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        p: 3,
-        marginRight: '10px',
-        marginLeft: '10px',
-        marginTop: '60px'
-      }}
-    >
-      <Grid
-        container
-        spacing={{ xs: 2, md: 2 }}
-        columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
+    return (
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginRight: '10px',
+          marginLeft: '10px',
+          marginTop: '60px'
+        }}
       >
-        {modelDetail?.feature_summary.map((feature, index) => (
-          <PlotCard key={index} nameOfModel={modelDetail.name} width={725} height={575}>
-            <FeaturePlot
+        <Grid
+          container
+          spacing={{ xs: 2, md: 2 }}
+          columns={{ xs: 4, sm: 4, md: 6, lg: 12 }}
+        >
+          {modelDetail?.feature_summary.map((feature, index) => (
+            <PlotCard
+              key={index}
               nameOfModel={modelDetail.name}
-              nameOfFeature={feature.name}
-              nameOfWeight={modelDetail.var_weights}
-              nameOfTarget={modelDetail.target}
-              nameOfPrediction={modelDetail.prediction}
-              data={feature.data}
               width={725}
               height={575}
-            />
-          </PlotCard>
-        ))}
-      </Grid>
-    </Box>
-  );
-});
+            >
+              <FeaturePlot
+                nameOfModel={modelDetail.name}
+                nameOfFeature={feature.name}
+                nameOfWeight={modelDetail.var_weights}
+                nameOfTarget={modelDetail.target}
+                nameOfPrediction={modelDetail.prediction}
+                data={feature.data}
+                width={725}
+                height={575}
+              />
+            </PlotCard>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+);
 
 export default AutoGrid;

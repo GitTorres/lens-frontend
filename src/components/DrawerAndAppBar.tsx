@@ -45,7 +45,7 @@ const DrawerAndAppBar = React.memo(() => {
     setOpen(false);
   }, []);
 
-  console.log('drawerAndAppBar: re-render');
+  console.log('re-render: drawerAndAppBar');
 
   return (
     <React.Fragment>
