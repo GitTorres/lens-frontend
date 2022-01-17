@@ -2,7 +2,7 @@ up:
 	docker compose up -d
 down:
 	docker compose down --remove-orphans
-prod:
+up prod:
 	docker compose -f docker-compose.prod.yml up -d
 bash:
 	docker exec -it lens-front-dev bash
