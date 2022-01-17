@@ -3,10 +3,14 @@ version: '3.8'
 services:
   ts-react-app-prod:
     build:
-      dockerfile: app.Dockerfile
+      dockerfile: react.Dockerfile
       target: production
     container_name: ts-react-app-prod
     expose:
       - '80'
     ports:
       - '8080:80'
+networks:
+  default:
+    external: true
+    name: lens-mongo_default
