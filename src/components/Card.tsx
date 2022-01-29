@@ -9,10 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
 
 const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '3px', transform: 'scale(1.5)' }}
-  >
+  <Box component="span" sx={{ display: 'inline-block', mx: '3px', transform: 'scale(1.5)' }}>
     •
   </Box>
 );

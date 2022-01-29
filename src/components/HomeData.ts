@@ -104,10 +104,7 @@ export type ButtonCallback = (
   event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>
 ) => void;
 
-export type ApprovedButtonSources =
-  | 'NONE'
-  | 'DRAWER.MODEL_IMPORT'
-  | 'DRAWER.MODEL_NAME';
+export type ApprovedButtonSources = 'NONE' | 'DRAWER.MODEL_IMPORT' | 'DRAWER.MODEL_NAME';
 export type ApprovedButtonActions = 'NONE' | 'FETCH' | 'SHOW_MODEL';
 
 export interface ButtonClickEvent {

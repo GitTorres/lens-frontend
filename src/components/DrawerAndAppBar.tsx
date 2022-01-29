@@ -69,11 +69,7 @@ const DrawerAndAppBar = React.memo(() => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <AppDrawer
-        variant="permanent"
-        open={open}
-        handleDrawerClose={handleDrawerClose}
-      />
+      <AppDrawer variant="permanent" open={open} handleDrawerClose={handleDrawerClose} />
     </React.Fragment>
   );
 });

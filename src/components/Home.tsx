@@ -21,9 +21,7 @@ export const DrawerContext = React.createContext<AppContextDrawer>({
 
 const Home = () => {
   // stores button click information that initiates some action
-  const [buttonClickEvent, setButtonClickEvent] = useState(
-    homeStateOnMount.buttonClick
-  );
+  const [buttonClickEvent, setButtonClickEvent] = useState(homeStateOnMount.buttonClick);
 
   // store model summary data
   // thought -- switch to useState hook?
@@ -91,17 +89,11 @@ const Home = () => {
   // callback when SHOW_MODEL action is received from a button click
   // we filter to selected model to show its details
   const handleActionShowModel = useCallback(() => {
-    // update selected feature summary variable
     const getModelDetails = (modelName: string): GLMSummary | undefined => {
-      const modelDetails = summaryData?.data
-        ?.filter((model) => model.name == modelName)
-        .pop();
-
-      return modelDetails;
+      return summaryData?.data?.filter((model) => model.name == modelName).pop();
     };
 
     const modelName = buttonClickEvent.buttonKey;
-
     if (modelName != undefined && modelName != modelDetail?.name) {
       setModelDetail(getModelDetails(modelName));
       console.log('home: re-render due to model detail change');
