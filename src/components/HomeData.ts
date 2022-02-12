@@ -9,7 +9,7 @@ import axios, { AxiosResponse } from 'axios';
 export const fetchSummaries = async (query: QuerySummary): Promise<GLMSummary[]> => {
   const { data }: AxiosResponse<GLMSummary[]> = await axios.request({
     method: 'get',
-    url: 'http://localhost:8000/modelsummary/regression/',
+    url: 'http://api.lensview.io/modelsummary/regression/',
     params: query
   });
 

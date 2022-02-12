@@ -1,12 +1,12 @@
 # more on multi-stage builds @ https://docs.docker.com/develop/develop-images/multistage-build/
 
-FROM node:16 as base
+FROM node:16 as dev
 WORKDIR /home/front/app
-COPY package.json ./
+COPY package.json .
 RUN npm i 
-COPY . .
+COPY public ./public
 
-FROM base as build
+FROM dev as build
 RUN npm run build
 
 FROM nginx:1.21.5-alpine as production

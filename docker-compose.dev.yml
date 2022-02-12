@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  react:
+    build:
+      context: .
+      dockerfile: react.Dockerfile
+      target: dev
+    volumes:
+      - ./src:/home/front/app/src
+    container_name: react
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'

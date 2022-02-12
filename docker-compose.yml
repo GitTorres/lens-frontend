@@ -1,18 +1,8 @@
 version: '3.8'
 
 services:
-  ts-react-app-dev:
-    build:
-      context: .
-      dockerfile: react.Dockerfile
-      target: base
-    volumes:
-      - ./src:/home/front/app/src
-    container_name: lens-front-dev
-    expose:
-      - '3000'
-    ports:
-      - '3000:3000'
+  react:
+    container_name: react
     command: npm start
 networks:
   default:
