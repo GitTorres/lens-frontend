@@ -17,9 +17,9 @@ RUN npm run build
 FROM node:17.5.0-alpine as build-no-dev-deps
 WORKDIR /home/front/app
 COPY --from=build /home/front/app/package*.json ./
-COPY --from=build /home/front/app/build ./
+COPY --from=build /home/front/app/build ./build
 RUN npm install --only=production
 
 # prod stage
-# FROM nginx:1.21.5-alpine as prod
-# COPY --from=build-no-dev-deps /home/front/app/build /usr/share/nginx/html
+FROM nginx:1.21.5-alpine as prod
+COPY --from=build-no-dev-deps /home/front/app/build /usr/share/nginx/html
