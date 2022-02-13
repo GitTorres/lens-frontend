@@ -8,6 +8,6 @@ services:
       target: prod
     container_name: react
     expose:
-      - '8083'
+      - '80'
     ports:
-      - '8083:8083'
+      - '80:80'
