@@ -3,7 +3,6 @@ version: '3.8'
 services:
   react:
     container_name: react
-    command: npm start
 networks:
   default:
     external: true

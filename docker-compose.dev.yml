@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: react.Dockerfile
       target: dev
+    command: npm start
     volumes:
       - ./src:/home/front/app/src
     container_name: react
